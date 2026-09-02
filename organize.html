@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventify Studio | Premium Event Management & Bookings</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- AOS Animation Library CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- html2pdf Library for Ticket Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #ff7675;
+            --dark-color: #0f172a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
+                        url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1920&q=80') fixed center/cover no-repeat;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Cursor Glow Effect Styling */
+        #cursor-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(34, 139, 34, 0.50) 0%, rgba(50, 205, 50, 0.25) 45%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: transform 0.08s ease-out, opacity 0.3s ease;
+            mix-blend-mode: screen;
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
+            color: #334155;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Dynamic Sticky Navbar */
+        .navbar-custom {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .navbar-custom.scrolled {
+            background: rgba(15, 23, 42, 0.98) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Category Card */
+        .category-card {
+            border: none;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: #1e293b;
+        }
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(108, 92, 231, 0.4);
+            background: var(--primary-color);
+            color: white !important;
+        }
+        .category-card:hover .cat-icon {
+            transform: scale(1.15);
+            color: white !important;
+        }
+        .cat-icon {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        /* Venue Grid Cards */
+        .venue-card {
+            border: none;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+            background: white;
+            color: #334155;
+        }
+        .venue-card:hover { transform: translateY(-6px); }
+        .venue-img-wrap {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+        .venue-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .venue-card:hover .venue-img-wrap img { transform: scale(1.08); }
+
+        .venue-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Event Card with Overlay & Wishlist */
+        .event-card {
+            border: none;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+            background: white;
+            color: #334155;
+            position: relative;
+        }
+        .event-card:hover { transform: translateY(-6px); }
+        .event-img-wrap {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+        .event-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .event-card:hover .event-img-wrap img { transform: scale(1.08); }
+
+        .img-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .event-img-wrap:hover .img-overlay, .gallery-wrap:hover .img-overlay {
+            opacity: 1;
+        }
+
+        .event-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(15, 23, 42, 0.85);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .wishlist-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 35px; height: 35px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            color: #dc3545;
+            transition: all 0.2s;
+            z-index: 2;
+        }
+        .wishlist-btn.active, .wishlist-btn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Seat Layout Matrix */
+        .seat {
+            width: 32px; height: 32px;
+            border-radius: 6px;
+            margin: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        .seat.available { background: #e2e8f0; color: #334155; }
+        .seat.selected { background: #22c55e; color: white; }
+        .seat.occupied { background: #94a3b8; cursor: not-allowed; opacity: 0.5; }
+
+        /* Custom Floating Widgets */
+        .floating-btn {
+            position: fixed;
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 999;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .floating-btn:hover { transform: scale(1.1); color: white; }
+        #back-to-top { bottom: 20px; right: 20px; background: var(--primary-color); display: none; }
+        #whatsapp-btn { bottom: 80px; right: 20px; background: #25D366; }
+        #live-chat-btn { bottom: 140px; right: 20px; background: #0084ff; }
+
+        /* Chat Widget Popup */
+        #chat-widget {
+            position: fixed;
+            bottom: 200px; right: 20px;
+            width: 300px; height: 380px;
+            background: white; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none; flex-direction: column;
+            z-index: 1000; overflow: hidden;
+            color: #334155;
+        }
+
+        /* Nav Pills Styling */
+        .custom-pills .nav-link {
+            border-radius: 30px;
+            padding: 10px 24px;
+            font-weight: 600;
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 0 4px;
+            transition: all 0.3s;
+        }
+        .custom-pills .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
+        }
+
+        .section-padding { padding: 90px 0; }
+        footer { background: rgba(15, 23, 42, 0.95); color: #94a3b8; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        footer a { color: #cbd5e1; text-decoration: none; }
+        footer a:hover { color: var(--secondary-color); }
+    </style>
+<style>
+body[data-page] section { display:none !important; }
+body[data-page="home"] #home, body[data-page="home"] #home + section { display:block !important; }
+body[data-page="home"] #home { display:flex !important; }
+body[data-page="categories"] #categories, body[data-page="venues"] #venues, body[data-page="events"] #events, body[data-page="events"] #artist-details, body[data-page="calendar"] #calendar-sec, body[data-page="gallery"] #gallery, body[data-page="blogs"] #blogs, body[data-page="dashboards"] #dashboards, body[data-page="organize"] #services-booking, body[data-page="contact"] #contact { display:block !important; }
+</style>
+</head>
+<body data-page="organize">
+
+    <!-- Cursor Glow Dynamic Element -->
+    <div id="cursor-glow"></div>
+
+    <!-- Animated Loading Screen -->
+    <div id="loading-screen">
+        <i class="fa-solid fa-compact-disc fa-spin fa-4x text-warning mb-3"></i>
+        <h3 class="fw-bold text-white"><span class="text-white">Eventify</span><span class="text-warning">Studio</span></h3>
+        <p class="text-muted">Loading premium event experiences...</p>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top shadow-sm" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="index.html">
+                <i class="fa-solid fa-compact-disc me-2 text-warning"></i><span class="text-white">Eventify</span><span class="text-warning">Studio</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-3 fw-semibold">
+                    <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="categories.html">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link text-warning" href="events.html"><i class="fa-solid fa-star me-1"></i>Concerts & Shows</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="venues.html">Venues</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="gallery.html">Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="calendar.html">Calendar</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="blogs.html">Blogs</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="dashboards.html">Dashboards</a></li>
+                </ul>
+                <button class="btn btn-outline-light rounded-pill px-3 me-2 fw-bold" data-bs-toggle="modal" data-bs-target="#referralModal"><i class="fa-solid fa-gift text-warning me-1"></i>Earn ₹200</button>
+                <a href="events.html" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm">Book Event</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-banner pt-5">
+        <div class="container text-center pt-5">
+            <div class="row justify-content-center" data-aos="fade-up">
+                <div class="col-lg-10">
+                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill mb-3 fw-bold uppercase">10+ Years of Excellence in Pune</span>
+                    <h1 class="hero-title mb-3">Book, Organize & Manage Unforgettable Events</h1>
+                    <p class="lead mb-4 text-light opacity-90">From AP Dhillon, Karan Aujla & Nora Fatehi live concerts to high-profile weddings and standup shows in Pune.</p>
+                    
+                    <!-- Search Bar -->
+                    <div class="position-relative card p-2 bg-white rounded-4 shadow-lg mx-auto mb-4" style="max-width: 750px;">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                                    <input type="text" id="searchInput" class="form-control border-0 text-dark" placeholder="Type 'A' or 'P' (Pranit, Karan, Nora, Samay)..." onkeyup="handleSearchSuggestions()">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-0"><i class="fa-solid fa-location-dot text-muted"></i></span>
+                                    <select class="form-select border-0 text-dark" id="locationSelect" onchange="filterEvents()">
+                                        <option value="" selected>All Venues in Pune</option>
+                                        <option value="JW Marriott">JW Marriott, SB Rd</option>
+                                        <option value="Roots9">Roots9, Baner</option>
+                                        <option value="Phoenix">Phoenix Marketcity</option>
+                                        <option value="Amanora">Amanora Mall Ground</option>
+                                        <option value="Pandit Farms">Pandit Farms</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="events.html" class="btn btn-primary w-100 rounded-3 py-2 fw-bold" onclick="filterEvents()">Find Shows</a>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown Search Suggestions -->
+                        <div id="searchSuggestions" class="list-group position-absolute w-100 shadow-lg text-start" style="top: 105%; left:0; z-index: 1000; display: none;"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="events.html" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold"><i class="fa-solid fa-ticket me-2"></i>Explore Concerts</a>
+                        <a href="organize.html" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-bold"><i class="fa-solid fa-calendar-check me-2"></i>Organize Event</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Counter Section -->
+    <section class="py-5 bg-dark border-top border-bottom border-secondary">
+        <div class="container text-center">
+            <div class="row g-4" data-aos="zoom-in">
+                <div class="col-6 col-md-3">
+                    <h2 class="fw-bold text-warning display-5 counter" data-target="15000">0</h2>
+                    <p class="text-light mb-0 fw-semibold">Events Hosted</p>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h2 class="fw-bold text-warning display-5 counter" data-target="200000">0</h2>
+                    <p class="text-light mb-0 fw-semibold">Tickets Sold</p>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h2 class="fw-bold text-warning display-5 counter" data-target="250">0</h2>
+                    <p class="text-light mb-0 fw-semibold">Artists</p>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h2 class="fw-bold text-warning display-5 counter" data-target="98">0</h2>
+                    <p class="text-light mb-0 fw-semibold">% Satisfaction Rate</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="section-padding">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h6 class="text-warning fw-bold text-uppercase">What We Offer</h6>
+                <h2 class="fw-bold fs-1 text-white">Explore Event Categories</h2>
+            </div>
+            <div class="row g-4 text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-6 col-md-4 col-lg-2.4">
+                    <div class="category-card p-4" onclick="openCategoryModal('Birthday Party')">
+                        <i class="fa-solid fa-cake-candles cat-icon mb-2"></i>
+                        <h6 class="fw-bold mb-0">Birthday</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2.4">
+                    <div class="category-card p-4" onclick="openCategoryModal('Wedding Ceremony')">
+                        <i class="fa-solid fa-ring cat-icon mb-2"></i>
+                        <h6 class="fw-bold mb-0">Wedding</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2.4">
+                    <div class="category-card p-4" onclick="openCategoryModal('Private Party')">
+                        <i class="fa-solid fa-champagne-glasses cat-icon mb-2"></i>
+                        <h6 class="fw-bold mb-0">Party</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2.4">
+                    <div class="category-card p-4" onclick="openCategoryModal('Music Concert')">
+                        <i class="fa-solid fa-music cat-icon mb-2"></i>
+                        <h6 class="fw-bold mb-0">Music Concert</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2.4">
+                    <div class="category-card p-4" onclick="openCategoryModal('Dance Concert')">
+                        <i class="fa-solid fa-person-dancing cat-icon mb-2"></i>
+                        <h6 class="fw-bold mb-0">Dance Concert</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2.4">
+                    <div class="category-card p-4" onclick="openCategoryModal('Singing Show')">
+                        <i class="fa-solid fa-microphone-lines cat-icon mb-2"></i>
+                        <h6 class="fw-bold mb-0">Singing Show</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PARTNERED VENUES GRID SECTION -->
+    <section id="venues" class="section-padding bg-dark bg-opacity-75">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h6 class="text-warning fw-bold text-uppercase">Top Event Venues in Pune</h6>
+                <h2 class="fw-bold fs-1 text-white">Partnered Venues</h2>
+            </div>
+
+            <!-- Row 1: 4 Cards -->
+            <div class="row g-4 mb-4" data-aos="fade-up">
+                <div class="col-md-6 col-lg-3">
+                    <div class="venue-card h-100">
+                        <div class="venue-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" alt="JW Marriott">
+                            <span class="venue-badge bg-warning text-dark">5-Star Luxury Hotel</span>
+                        </div>
+                        <div class="p-3">
+                            <h5 class="fw-bold mb-1">JW Marriott</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Senapati Bapat Road, Pune</p>
+                            <p class="small text-muted mb-3"><i class="fa-solid fa-users me-1 text-primary"></i>Capacity: 400 | <i class="fa-solid fa-square-parking me-1 text-primary"></i>Valet Parking</p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="fw-bold text-primary">₹1,20,000 / day</span>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold" onclick="openCategoryModal('JW Marriott Venue Booking')">Book Venue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="venue-card h-100">
+                        <div class="venue-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80" alt="Roots9">
+                            <span class="venue-badge bg-primary">Open Concert Arena</span>
+                        </div>
+                        <div class="p-3">
+                            <h5 class="fw-bold mb-1">Roots9</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Baner, Pune</p>
+                            <p class="small text-muted mb-3"><i class="fa-solid fa-users me-1 text-primary"></i>Capacity: 3,000 | <i class="fa-solid fa-square-parking me-1 text-primary"></i>Open Parking</p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="fw-bold text-primary">₹1,80,000 / day</span>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold" onclick="openCategoryModal('Roots9 Venue Booking')">Book Venue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="venue-card h-100">
+                        <div class="venue-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=600&q=80" alt="Phoenix Marketcity">
+                            <span class="venue-badge bg-info text-dark">Mall Courtyard</span>
+                        </div>
+                        <div class="p-3">
+                            <h5 class="fw-bold mb-1">Phoenix Marketcity</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Viman Nagar, Pune</p>
+                            <p class="small text-muted mb-3"><i class="fa-solid fa-users me-1 text-primary"></i>Capacity: 2,000 | <i class="fa-solid fa-square-parking me-1 text-primary"></i>Mall Parking</p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="fw-bold text-primary">₹95,000 / day</span>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold" onclick="openCategoryModal('Phoenix Marketcity Venue Booking')">Book Venue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="venue-card h-100">
+                        <div class="venue-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80" alt="Amanora Mall">
+                            <span class="venue-badge bg-success">Mall Outdoor Ground</span>
+                        </div>
+                        <div class="p-3">
+                            <h5 class="fw-bold mb-1">Amanora Mall</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Hadapsar, Pune</p>
+                            <p class="small text-muted mb-3"><i class="fa-solid fa-users me-1 text-primary"></i>Capacity: 4,000 | <i class="fa-solid fa-square-parking me-1 text-primary"></i>Covered Parking</p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="fw-bold text-primary">₹1,10,000 / day</span>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold" onclick="openCategoryModal('Amanora Mall Venue Booking')">Book Venue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: 4 More Cards -->
+            <div class="row g-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-md-6 col-lg-3">
+                    <div class="venue-card h-100">
+                        <div class="venue-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80" alt="Pandit Farms">
+                            <span class="venue-badge bg-danger">Grand Lawn</span>
+                        </div>
+                        <div class="p-3">
+                            <h5 class="fw-bold mb-1">Pandit Farms</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>DP Road, Pune</p>
+                            <p class="small text-muted mb-3"><i class="fa-solid fa-users me-1 text-primary"></i>Capacity: 5,000 | <i class="fa-solid fa-square-parking me-1 text-primary"></i>Lawn Parking</p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="fw-bold text-primary">₹1,50,000 / day</span>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold" onclick="openCategoryModal('Pandit Farms Booking')">Book Venue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="venue-card h-100">
+                        <div class="venue-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80" alt="Pyramids Club">
+                            <span class="venue-badge bg-secondary">Resort & Club</span>
+                        </div>
+                        <div class="p-3">
+                            <h5 class="fw-bold mb-1">Pyramids Club</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Koregaon Park, Pune</p>
+                            <p class="small text-muted mb-3"><i class="fa-solid fa-users me-1 text-primary"></i>Capacity: 1,200 | <i class="fa-solid fa-square-parking me-1 text-primary"></i>VIP Parking</p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="fw-bold text-primary">₹1,35,000 / day</span>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold" onclick="openCategoryModal('Pyramids Club Booking')">Book Venue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="venue-card h-100">
+                        <div class="venue-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80" alt="The Orchards">
+                            <span class="venue-badge bg-warning text-dark">Boutique Lawn</span>
+                        </div>
+                        <div class="p-3">
+                            <h5 class="fw-bold mb-1">The Orchards</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Bavdhan, Pune</p>
+                            <p class="small text-muted mb-3"><i class="fa-solid fa-users me-1 text-primary"></i>Capacity: 2,500 | <i class="fa-solid fa-square-parking me-1 text-primary"></i>Valet Available</p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="fw-bold text-primary">₹1,40,000 / day</span>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold" onclick="openCategoryModal('The Orchards Booking')">Book Venue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="venue-card h-100">
+                        <div class="venue-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" alt="Conrad Pune">
+                            <span class="venue-badge bg-dark">Luxury Hotel Ballroom</span>
+                        </div>
+                        <div class="p-3">
+                            <h5 class="fw-bold mb-1">Conrad Pune</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Mangaldas Road, Pune</p>
+                            <p class="small text-muted mb-3"><i class="fa-solid fa-users me-1 text-primary"></i>Capacity: 800 | <i class="fa-solid fa-square-parking me-1 text-primary"></i>Valet Parking</p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="fw-bold text-primary">₹2,10,000 / day</span>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold" onclick="openCategoryModal('Conrad Venue Booking')">Book Venue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Map Sub-Section -->
+            <div class="row mt-5">
+                <div class="col-12" data-aos="fade-up">
+                    <div class="glass-card p-4">
+                        <h4 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-map-location-dot text-danger me-2"></i>Interactive Map Explorer</h4>
+                        <div id="leafletMap" style="height: 380px; border-radius: 14px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Shows -->
+    <section id="events" class="section-padding">
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4" data-aos="fade-right">
+                <div>
+                    <h6 class="text-warning fw-bold text-uppercase">🔥 Trending Shows</h6>
+                    <h2 class="fw-bold fs-1 text-white mb-0">Featured Concerts & Shows</h2>
+                </div>
+                <ul class="nav nav-pills custom-pills mt-3 mt-md-0" id="eventTab">
+                    <li class="nav-item"><button class="nav-link active" data-filter="all">All Shows</button></li>
+                    <li class="nav-item"><button class="nav-link" data-filter="singing">Singing & Rap</button></li>
+                    <li class="nav-item"><button class="nav-link" data-filter="dance">Dance Shows</button></li>
+                    <li class="nav-item"><button class="nav-link" data-filter="comedy">Comedy</button></li>
+                </ul>
+            </div>
+
+            <!-- Filter Toolbar -->
+            <div class="card p-3 bg-secondary bg-opacity-25 border-0 rounded-4 mb-4 text-white" data-aos="fade-left">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="small fw-semibold">Max Price: <span id="priceVal">₹5000</span></label>
+                        <input type="range" class="form-range" id="priceRange" min="400" max="5000" step="100" value="5000" oninput="filterEvents()">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-semibold">Venue Type</label>
+                        <select class="form-select bg-dark text-white border-secondary" id="typeSelect" onchange="filterEvents()">
+                            <option value="">All Types</option>
+                            <option value="Outdoor">Outdoor</option>
+                            <option value="Indoor">Indoor</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-semibold">Sort By</label>
+                        <select class="form-select bg-dark text-white border-secondary" id="sortSelect" onchange="filterEvents()">
+                            <option value="date">Date (Upcoming)</option>
+                            <option value="priceLow">Price: Low to High</option>
+                            <option value="priceHigh">Price: High to Low</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-outline-warning w-100" onclick="resetFilters()">Reset Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHOWS: AP Dhillon, Arijit Singh, Anuv Jain, Nora Fatehi, Pranit More, Karan Aujla, Samay Raina, Bharatnatyam, Dance India Dance -->
+            <div class="row g-4" id="eventsContainer">
+
+                <!-- AP Dhillon Event Card -->
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2499" data-type="Outdoor" data-title="AP Dhillon">
+                    <div class="event-card" data-aos="fade-up">
+                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="event-img-wrap">
+                            <img src="https://www.baltana.com/files/wallpapers-27/AP-Dhillon-Background-Wallpaper-86503.jpg" alt="AP Dhillon">
+                            <span class="event-badge">🎤 Singing Concert</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning py-1 px-2 small mb-2 text-center fw-bold">
+                                ⏳ Starts In: <span class="countdown" data-date="2026-11-12T19:00:00">Calculating...</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">AP Dhillon - One Out Of One Tour</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Amanora Mall Outdoor Ground, Pune</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.9 (1.2K Reviews)</span>
+                                <span class="badge bg-secondary">Outdoor</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Availability</span>
+                                    <span><strong>420</strong> / 500 Seats Left</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-danger" style="width: 84%"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹2,499</h5></div>
+                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('AP Dhillon - One Out Of One Tour', 'Amanora Mall Ground, Pune', '12 Nov 2026', '7:00 PM', 'AP Dhillon')">Select Seats</button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <a href="events.html#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('AP Dhillon')">View Artist Profile &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arijit Singh Event Card -->
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2999" data-type="Outdoor" data-title="Arijit Singh">
+                    <div class="event-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="event-img-wrap">
+                            <img src="https://wallpaperaccess.com/full/1280813.jpg" alt="Arijit Singh">
+                            <span class="event-badge">🎤 Soulful Symphony</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning py-1 px-2 small mb-2 text-center fw-bold">
+                                ⏳ Starts In: <span class="countdown" data-date="2026-12-24T18:00:00">Calculating...</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">Arijit Singh - Soulful Symphony</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Pandit Farms, DP Road, Pune</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success bg-opacity-25 text-success">⭐ 5.0 (2.8K Reviews)</span>
+                                <span class="badge bg-secondary">Outdoor</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Availability</span>
+                                    <span><strong>50</strong> / 1000 Seats Left</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-danger" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹2,999</h5></div>
+                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Arijit Singh - Soulful Symphony', 'Pandit Farms, DP Road, Pune', '24 Dec 2026', '6:00 PM', 'Arijit Singh')">Select Seats</button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <a href="events.html#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Arijit Singh')">View Artist Profile &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anuv Jain Event Card -->
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="1499" data-type="Indoor" data-title="Anuv Jain">
+                    <div class="event-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="event-img-wrap">
+                            <img src="https://rollingstoneindia.com/wp-content/uploads/2024/03/Anuv-Jain-2-960x640.jpeg" alt="Anuv Jain">
+                            <span class="event-badge">🎤 Acoustic Night</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning py-1 px-2 small mb-2 text-center fw-bold">
+                                ⏳ Starts In: <span class="countdown" data-date="2026-12-18T18:30:00">Calculating...</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">Anuv Jain - Live in Concert</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>JW Marriott Ballroom, Pune</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.8 (950 Reviews)</span>
+                                <span class="badge bg-info text-dark">Indoor</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Availability</span>
+                                    <span><strong>120</strong> / 400 Seats Left</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-warning" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹1,499</h5></div>
+                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Anuv Jain - Live in Concert', 'JW Marriott Ballroom, Pune', '18 Dec 2026', '6:30 PM', 'Anuv Jain')">Select Seats</button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <a href="events.html#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Anuv Jain')">View Artist Profile &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nora Fatehi Card -->
+                <div class="col-md-6 col-lg-4 event-item" data-category="dance" data-price="1799" data-type="Outdoor" data-title="Nora Fatehi">
+                    <div class="event-card" data-aos="fade-up">
+                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="event-img-wrap">
+                            <img src="https://4kwallpapers.com/images/wallpapers/nora-fatehi-5120x2880-11113.jpg" alt="Nora Fatehi">
+                            <span class="event-badge">💃 Dance Concert</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning py-1 px-2 small mb-2 text-center fw-bold">
+                                ⏳ Starts In: <span class="countdown" data-date="2026-11-28T18:30:00">Calculating...</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">Nora Fatehi - Dance Fever Live</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Phoenix Marketcity Courtyard, Pune</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.9 (2.1K Reviews)</span>
+                                <span class="badge bg-secondary">Outdoor</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Availability</span>
+                                    <span><strong>180</strong> / 800 Seats Left</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-warning" style="width: 77%"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹1,799</h5></div>
+                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Nora Fatehi - Dance Fever Live', 'Phoenix Marketcity Courtyard, Pune', '28 Nov 2026', '6:30 PM', 'Nora Fatehi')">Select Seats</button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <a href="events.html#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Nora Fatehi')">View Artist Profile &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bharatnatyam Classical Dance Card -->
+                <div class="col-md-6 col-lg-4 event-item" data-category="dance" data-price="699" data-type="Indoor" data-title="Bharatnatyam">
+                    <div class="event-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="event-img-wrap">
+                            <img src="https://thumbs.dreamstime.com/b/group-classical-odissi-dancers-performing-odissi-dance-stage-konark-temple-odisha-india-odissi-dance-also-known-as-155047464.jpg" alt="Bharatnatyam">
+                            <span class="event-badge">🩰 Classical Dance</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning py-1 px-2 small mb-2 text-center fw-bold">
+                                ⏳ Starts In: <span class="countdown" data-date="2026-12-10T17:30:00">Calculating...</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">Bharatnatyam - Classical Dance Night</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Grand Orchid Hall, Viman Nagar, Pune</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.7 (430 Reviews)</span>
+                                <span class="badge bg-info text-dark">Indoor</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Availability</span>
+                                    <span><strong>90</strong> / 300 Seats Left</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹699</h5></div>
+                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Bharatnatyam - Classical Dance Night', 'Grand Orchid Hall, Viman Nagar, Pune', '10 Dec 2026', '5:30 PM', 'Bharatnatyam Group')">Select Seats</button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <a href="events.html#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Bharatnatyam Group')">View Artist Profile &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KR$NA Rap Concert Card -->
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="1199" data-type="Indoor" data-title="KR$NA Rap Concert">
+                    <div class="event-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="event-img-wrap">
+                            <img src="https://images.indianexpress.com/2024/02/indian-rapper.jpg" alt="KR$NA Rap Concert">
+                            <span class="event-badge">🎤 Hip-Hop Rap Showcase</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning py-1 px-2 small mb-2 text-center fw-bold">
+                                ⏳ Starts In: <span class="countdown" data-date="2026-12-15T18:00:00">Calculating...</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">KR$NA Rap Concert Show</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>JW Marriott Ballroom, SB Road, Pune</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.8 (1.5K Reviews)</span>
+                                <span class="badge bg-info text-dark">Indoor</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Availability</span>
+                                    <span><strong>110</strong> / 500 Seats Left</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-warning" style="width: 78%"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹1,199</h5></div>
+                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('KR$NA Rap Concert Show', 'JW Marriott Ballroom, SB Road, Pune', '15 Dec 2026', '6:00 PM', 'KR$NA')">Select Seats</button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <a href="events.html#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('DID Troupe')">View Artist Profile &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Karan Aujla Event Card -->
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2199" data-type="Outdoor" data-title="Karan Aujla">
+                    <div class="event-card" data-aos="fade-up">
+                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="event-img-wrap">
+                            <img src="https://www.rollingstone.com/wp-content/uploads/2025/05/Karan-Aujla-exclusive.jpg?crop=120px%2C0px%2C1680px%2C946px&resize=1600%2C900" alt="Karan Aujla">
+                            <span class="event-badge">🎤 Hip-Hop Rap</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning py-1 px-2 small mb-2 text-center fw-bold">
+                                ⏳ Starts In: <span class="countdown" data-date="2026-11-20T19:30:00">Calculating...</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">Karan Aujla - Making Memories Tour</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Roots9 Arena, Baner, Pune</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.9 (3.1K Reviews)</span>
+                                <span class="badge bg-secondary">Outdoor</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Availability</span>
+                                    <span><strong>250</strong> / 2000 Seats Left</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-danger" style="width: 87%"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹2,199</h5></div>
+                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Karan Aujla - Making Memories Tour', 'Roots9 Arena, Baner, Pune', '20 Nov 2026', '7:30 PM', 'Karan Aujla')">Select Seats</button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <a href="events.html#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Karan Aujla')">View Artist Profile &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pranit More Standup Comedy Card -->
+                <div class="col-md-6 col-lg-4 event-item" data-category="comedy" data-price="499" data-type="Indoor" data-title="Pranit More">
+                    <div class="event-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="event-img-wrap">
+                            <img src="https://cf-images.assettype.com/newindianexpress%2F2026-06-16%2Fspwetr0p%2FPramit-More-2.jpeg?rect=0%2C114%2C1133%2C637&w=320&auto=format%2Ccompress&fit=max" alt="Pranit More">
+                            <span class="event-badge">😂 Standup Comedy</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning py-1 px-2 small mb-2 text-center fw-bold">
+                                ⏳ Starts In: <span class="countdown" data-date="2026-12-08T20:00:00">Calculating...</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">Pranit More Comedy Live</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Roots9 Arena, Baner, Pune</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.8 (880 Reviews)</span>
+                                <span class="badge bg-info text-dark">Indoor</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Availability</span>
+                                    <span><strong>65</strong> / 250 Seats Left</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-warning" style="width: 74%"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹499</h5></div>
+                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Pranit More Comedy Live', 'Roots9 Arena, Baner, Pune', '08 Dec 2026', '8:00 PM', 'Pranit More')">Select Seats</button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <a href="events.html#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Pranit More')">View Artist Profile &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Samay Raina Comedy Card -->
+                <div class="col-md-6 col-lg-4 event-item" data-category="comedy" data-price="999" data-type="Indoor" data-title="Samay Raina">
+                    <div class="event-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="event-img-wrap">
+                            <img src="https://www.hindustantimes.com/ht-img/img/2026/04/13/original/Samay_Raina_1776060978634_1776060978871.jpg" alt="Samay Raina">
+                            <span class="event-badge">😂 Comedy Show</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-warning py-1 px-2 small mb-2 text-center fw-bold">
+                                ⏳ Starts In: <span class="countdown" data-date="2026-12-05T19:00:00">Calculating...</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">Samay Raina - Unfiltered Comedy</h5>
+                            <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>JW Marriott Auditorium, Pune</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.9 (4.2K Reviews)</span>
+                                <span class="badge bg-info text-dark">Indoor</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Availability</span>
+                                    <span><strong>35</strong> / 600 Seats Left</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-danger" style="width: 94%"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹999</h5></div>
+                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Samay Raina - Unfiltered Comedy', 'JW Marriott Auditorium, Pune', '05 Dec 2026', '8:00 PM', 'Samay Raina')">Select Seats</button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <a href="events.html#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Samay Raina')">View Artist Profile &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Compare Tickets Pricing Matrix -->
+    <section class="section-padding bg-dark bg-opacity-75">
+        <div class="container" data-aos="fade-up">
+            <div class="text-center mb-5">
+                <h6 class="text-warning fw-bold text-uppercase">Tier Comparison</h6>
+                <h2 class="fw-bold fs-1 text-white">Compare Ticket Tiers</h2>
+            </div>
+            <div class="table-responsive glass-card p-4">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="table-dark">
+                            <th>Features</th>
+                            <th class="text-center">Silver (₹999)</th>
+                            <th class="text-center">Gold (₹1,999)</th>
+                            <th class="text-center">Premium (₹2,999)</th>
+                            <th class="text-center text-warning">VIP (₹4,999)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Seating Area</td>
+                            <td class="text-center">Back Lawn</td>
+                            <td class="text-center">Middle Row</td>
+                            <td class="text-center">Front Section</td>
+                            <td class="text-center fw-bold text-success">Front Row Arena</td>
+                        </tr>
+                        <tr>
+                            <td>Complimentary Food & Drink</td>
+                            <td class="text-center text-muted">❌</td>
+                            <td class="text-center text-muted">❌</td>
+                            <td class="text-center text-success">1 Snack Box</td>
+                            <td class="text-center text-success">Unlimited Buffet & Drinks</td>
+                        </tr>
+                        <tr>
+                            <td>Backstage / Fan Lounge Access</td>
+                            <td class="text-center text-muted">❌</td>
+                            <td class="text-center text-muted">❌</td>
+                            <td class="text-center text-muted">❌</td>
+                            <td class="text-center text-success">VIP Lounge Pass</td>
+                        </tr>
+                        <tr>
+                            <td>Express Entry Gate</td>
+                            <td class="text-center text-muted">❌</td>
+                            <td class="text-center text-success">✓</td>
+                            <td class="text-center text-success">✓</td>
+                            <td class="text-center text-success">Dedicated VIP Gate</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Event Calendar Section -->
+    <section id="calendar-sec" class="section-padding">
+        <div class="container" data-aos="fade-up">
+            <div class="text-center mb-5">
+                <h6 class="text-warning fw-bold text-uppercase">Schedule</h6>
+                <h2 class="fw-bold fs-1 text-white">Monthly Event Calendar (2026)</h2>
+            </div>
+            <div class="glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold text-dark mb-0"><i class="fa-regular fa-calendar-days text-primary me-2"></i>November / December 2026</h4>
+                    <span class="badge bg-primary px-3 py-2">Shows Available</span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <span class="badge bg-danger mb-2">12 NOV 2026</span>
+                            <h6 class="fw-bold mb-1">AP Dhillon Tour</h6>
+                            <p class="small text-muted mb-0">Amanora Mall Ground</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <span class="badge bg-danger mb-2">20 NOV 2026</span>
+                            <h6 class="fw-bold mb-1">Karan Aujla Live</h6>
+                            <p class="small text-muted mb-0">Roots9 Arena, Baner</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <span class="badge bg-danger mb-2">28 NOV 2026</span>
+                            <h6 class="fw-bold mb-1">Nora Fatehi Show</h6>
+                            <p class="small text-muted mb-0">Phoenix Marketcity</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <span class="badge bg-danger mb-2">08 DEC 2026</span>
+                            <h6 class="fw-bold mb-1">Pranit More Comedy</h6>
+                            <p class="small text-muted mb-0">Roots9 Arena, Baner</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Artist Details Page Section -->
+    <section id="artist-details" class="section-padding bg-dark bg-opacity-75">
+        <div class="container" data-aos="fade-up">
+            <div class="text-center mb-5">
+                <h6 class="text-warning fw-bold text-uppercase">Performer Spotlight</h6>
+                <h2 class="fw-bold fs-1 text-white">Artist Profile</h2>
+            </div>
+            <div class="glass-card p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-4 text-center">
+                        <img id="artistImg" src="https://www.baltana.com/files/wallpapers-27/AP-Dhillon-Background-Wallpaper-86503.jpg" class="img-fluid rounded-circle shadow" style="width:220px; height:220px; object-fit:cover;">
+                    </div>
+                    <div class="col-md-8">
+                        <h2 class="fw-bold text-dark mb-1" id="artistName">AP Dhillon</h2>
+                        <span class="badge bg-primary mb-3" id="artistTag">Indo-Canadian Rapper / Singer</span>
+                        <p id="artistBio">Amritpal Singh Dhillon is known globally for blending Punjabi music with modern hip-hop, synth-wave, and pop tropes. Hits include 'Brown Munde', 'Excuses', and 'Insane'.</p>
+                        <h6 class="fw-bold text-dark mt-3">Popular Highlights:</h6>
+                        <ul class="list-inline" id="artistTracks">
+                            <li class="list-inline-item badge bg-secondary">🎵 Brown Munde</li>
+                            <li class="list-inline-item badge bg-secondary">🎵 Excuses</li>
+                            <li class="list-inline-item badge bg-secondary">🎵 With You</li>
+                            <li class="list-inline-item badge bg-secondary">🎵 Summer High</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY SECTION (9 PHOTOS GRID) -->
+    <section id="gallery" class="section-padding">
+        <div class="container" data-aos="fade-up">
+            <div class="text-center mb-5">
+                <h6 class="text-warning fw-bold text-uppercase">Past Moments</h6>
+                <h2 class="fw-bold fs-1 text-white">Event Photo Gallery</h2>
+            </div>
+            <div class="row g-4">
+                <!-- Row 1 -->
+                <div class="col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 gallery-wrap shadow">
+                        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=80" class="img-fluid w-100" style="height:250px; object-fit:cover;" alt="DJ Night Stage">
+                        <div class="img-overlay">
+                            <button class="btn btn-light rounded-pill px-4 fw-bold">View Photo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 gallery-wrap shadow">
+                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80" class="img-fluid w-100" style="height:250px; object-fit:cover;" alt="Wedding Decor">
+                        <div class="img-overlay">
+                            <button class="btn btn-light rounded-pill px-4 fw-bold">View Photo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 gallery-wrap shadow">
+                        <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80" class="img-fluid w-100" style="height:250px; object-fit:cover;" alt="Banquet Dinner">
+                        <div class="img-overlay">
+                            <button class="btn btn-light rounded-pill px-4 fw-bold">View Photo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 gallery-wrap shadow">
+                        <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80" class="img-fluid w-100" style="height:250px; object-fit:cover;" alt="Live Concert Stage">
+                        <div class="img-overlay">
+                            <button class="btn btn-light rounded-pill px-4 fw-bold">View Photo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 gallery-wrap shadow">
+                        <img src="https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=600&q=80" class="img-fluid w-100" style="height:250px; object-fit:cover;" alt="Symphony Violins">
+                        <div class="img-overlay">
+                            <button class="btn btn-light rounded-pill px-4 fw-bold">View Photo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 gallery-wrap shadow">
+                        <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80" class="img-fluid w-100" style="height:250px; object-fit:cover;" alt="Cheering Crowd">
+                        <div class="img-overlay">
+                            <button class="btn btn-light rounded-pill px-4 fw-bold">View Photo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 gallery-wrap shadow">
+                        <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=600&q=80" class="img-fluid w-100" style="height:250px; object-fit:cover;" alt="Confetti Lights">
+                        <div class="img-overlay">
+                            <button class="btn btn-light rounded-pill px-4 fw-bold">View Photo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 gallery-wrap shadow">
+                        <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=600&q=80" class="img-fluid w-100" style="height:250px; object-fit:cover;" alt="Dance Soloist">
+                        <div class="img-overlay">
+                            <button class="btn btn-light rounded-pill px-4 fw-bold">View Photo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 gallery-wrap shadow">
+                        <img src="https://images.unsplash.com/photo-1469488865564-c2de10f69f96?auto=format&fit=crop&w=600&q=80" class="img-fluid w-100" style="height:250px; object-fit:cover;" alt="Theater Auditorium">
+                        <div class="img-overlay">
+                            <button class="btn btn-light rounded-pill px-4 fw-bold">View Photo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blogs" class="section-padding bg-dark bg-opacity-75">
+        <div class="container" data-aos="fade-up">
+            <div class="text-center mb-5">
+                <h6 class="text-warning fw-bold text-uppercase">News & Articles</h6>
+                <h2 class="fw-bold fs-1 text-white">Event Insights & Guides</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 rounded-4 shadow overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80" class="card-img-top" height="180" alt="Wedding Venues">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-2">Top 10 Wedding Venues in Pune</h5>
+                            <p class="text-muted small">Discover the best lawn setups and 5-star banquet halls across SB Road, Baner, and Koregaon Park.</p>
+                            <a href="#" class="fw-bold text-primary text-decoration-none">Read Full Article &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 rounded-4 shadow overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80" class="card-img-top" height="180" alt="Best Concerts">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-2">Best Concerts of 2026</h5>
+                            <p class="text-muted small">Highlights from AP Dhillon, Arijit Singh, and Karan Aujla's explosive live tours in Pune.</p>
+                            <a href="#" class="fw-bold text-primary text-decoration-none">Read Full Article &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 rounded-4 shadow overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80" class="card-img-top" height="180" alt="Planning Tips">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-2">10 Ultimate Event Planning Tips</h5>
+                            <p class="text-muted small">How to budget sound, manage guest lists, and secure municipal permits effortlessly.</p>
+                            <a href="#" class="fw-bold text-primary text-decoration-none">Read Full Article &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Reviews Section -->
+    <section class="section-padding">
+        <div class="container" data-aos="fade-up">
+            <div class="text-center mb-5">
+                <h6 class="text-warning fw-bold text-uppercase">Testimonials</h6>
+                <h2 class="fw-bold fs-1 text-white">What Attendees Say</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="glass-card p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" class="rounded-circle me-3" width="50" height="50" alt="User Avatar">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0">Priya Sharma</h6>
+                                <span class="text-warning">⭐⭐⭐⭐⭐</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">"The instant QR ticket checkout was seamless. Got front-row access for AP Dhillon's show in Baner!"</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-card p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" class="rounded-circle me-3" width="50" height="50" alt="User Avatar">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0">Amit Kulkarni</h6>
+                                <span class="text-warning">⭐⭐⭐⭐⭐</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">"Organized our corporate fest through Eventify. Their team handled sound, lights, and food flawlessly."</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-card p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" class="rounded-circle me-3" width="50" height="50" alt="User Avatar">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0">Sneha Patil</h6>
+                                <span class="text-warning">⭐⭐⭐⭐⭐</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">"Seat matrix selection made choosing VIP passes so simple. Loved the floating WhatsApp support."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sponsors Section -->
+    <section class="py-4 bg-white">
+        <div class="container text-center">
+            <h6 class="text-muted text-uppercase mb-4 fw-bold small">Official Event Partners & Sponsors</h6>
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-5 fs-2 text-dark opacity-75">
+                <div><i class="fa-solid fa-bolt me-2 text-danger"></i><strong>Red Bull</strong></div>
+                <div><i class="fa-solid fa-bottle-water me-2 text-danger"></i><strong>Coca-Cola</strong></div>
+                <div><i class="fa-solid fa-headphones me-2 text-warning"></i><strong>JBL</strong></div>
+                <div><i class="fa-brands fa-spotify me-2 text-success"></i><strong>Spotify</strong></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboards Section -->
+    <section id="dashboards" class="section-padding bg-dark bg-opacity-75">
+        <div class="container" data-aos="fade-up">
+            <div class="text-center mb-5">
+                <h6 class="text-warning fw-bold text-uppercase">Management Portals</h6>
+                <h2 class="fw-bold fs-1 text-white">Dashboards Overview</h2>
+            </div>
+            
+            <ul class="nav nav-pills custom-pills justify-content-center mb-4" id="dashTab">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#user-dash">User Dashboard</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#org-dash">Organizer Dashboard</button></li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- User Dashboard Tab -->
+                <div class="tab-pane fade show active glass-card p-4 text-dark" id="user-dash">
+                    <h4 class="fw-bold mb-3"><i class="fa-solid fa-user-circle me-2 text-primary"></i>My Ticket Wallet</h4>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded-3 bg-light">
+                                <span class="badge bg-success mb-2">Active Ticket</span>
+                                <h6 class="fw-bold mb-1">AP Dhillon Tour</h6>
+                                <p class="small text-muted mb-2">Booking ID: #EVT-9821 | Seat: VIP-A12</p>
+                                <button class="btn btn-sm btn-primary" onclick="generateTicketPDF('AP Dhillon Tour', 'VIP-A12', '#EVT-9821')"><i class="fa-solid fa-download me-1"></i>Download Ticket</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded-3 bg-light opacity-75">
+                                <span class="badge bg-secondary mb-2">Past Event</span>
+                                <h6 class="fw-bold mb-1">Karan Aujla Tour</h6>
+                                <p class="small text-muted mb-0">15 Oct 2026 | Completed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Organizer Dashboard Tab -->
+                <div class="tab-pane fade glass-card p-4 text-dark" id="org-dash">
+                    <h4 class="fw-bold mb-3"><i class="fa-solid fa-chart-line me-2 text-danger"></i>Organizer Control Panel</h4>
+                    <div class="row g-3 text-center">
+                        <div class="col-md-3">
+                            <div class="p-3 bg-light rounded-3">
+                                <h3 class="fw-bold text-primary mb-0">12</h3>
+                                <span class="small text-muted">Active Events</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 bg-light rounded-3">
+                                <h3 class="fw-bold text-success mb-0">₹8.4 Lakh</h3>
+                                <span class="small text-muted">Total Revenue</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 bg-light rounded-3">
+                                <h3 class="fw-bold text-warning mb-0">3,420</h3>
+                                <span class="small text-muted">Bookings Confirmed</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 bg-light rounded-3">
+                                <h3 class="fw-bold text-danger mb-0">94%</h3>
+                                <span class="small text-muted">Venue Occupancy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Accordion Section -->
+    <section class="section-padding">
+        <div class="container" data-aos="fade-up" style="max-width: 800px;">
+            <div class="text-center mb-5">
+                <h6 class="text-warning fw-bold text-uppercase">Help Center</h6>
+                <h2 class="fw-bold fs-1 text-white">Frequently Asked Questions</h2>
+            </div>
+
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item border-0 mb-3 rounded-3 overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            How do I cancel my tickets?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            You can request cancellation up to 48 hours prior to the show start time through your User Dashboard.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item border-0 mb-3 rounded-3 overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            Is parking available at venues?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            Yes! All listed venues in Pune (Amanora, JW Marriott, Pandit Farms, Roots9) provide covered or open car parking.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item border-0 mb-3 rounded-3 overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            What is your refund policy?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            100% refund will be issued if an event gets postponed or canceled by event management.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item border-0 mb-3 rounded-3 overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            Can I transfer my tickets to a friend?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            Yes, simply share your generated ticket PDF & QR Code with your friend.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services-booking" class="section-padding bg-dark bg-opacity-75">
+        <div class="container">
+            <div class="glass-card p-5">
+                <div class="text-center mb-5">
+                    <h6 class="text-primary fw-bold text-uppercase">Plan Your Own Event</h6>
+                    <h2 class="fw-bold fs-1">Event Services & Custom Bookings</h2>
+                    <p class="text-muted">Ticket Booking, Event Organizing, or Full Management</p>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 p-4 border-0 bg-light rounded-4">
+                            <span class="badge bg-primary w-25 mb-3">Popular</span>
+                            <h4 class="fw-bold">Ticket Passes</h4>
+                            <p class="text-muted small">Reserve your seat/slot for upcoming live concerts, comedy nights, or cultural fests.</p>
+                            <hr>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> Instant e-ticket generation</li>
+                                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> VIP & General access options</li>
+                            </ul>
+                            <a href="events.html" class="btn btn-primary rounded-pill w-100 mt-auto fw-bold">View Concert Slots</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 p-4 border-0 bg-light rounded-4">
+                            <span class="badge bg-warning text-dark w-25 mb-3">Organize</span>
+                            <h4 class="fw-bold">Custom Organizing</h4>
+                            <p class="text-muted small">We manage stage design, sound systems, lights, and artist bookings for your private event.</p>
+                            <hr>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> Sound, Light & Staging</li>
+                                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> Catering & Decor setup</li>
+                            </ul>
+                            <button class="btn btn-outline-primary rounded-pill w-100 mt-auto fw-bold" onclick="openCategoryModal('Event Organizing Plan')">Request Quote</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 p-4 border-0 bg-light rounded-4">
+                            <span class="badge bg-danger w-25 mb-3">Management</span>
+                            <h4 class="fw-bold">Turnkey Management</h4>
+                            <p class="text-muted small">End-to-end management for large scale weddings, corporate expos, and college cultural fests.</p>
+                            <hr>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> Venue permits & legal safety</li>
+                                <li class="mb-2"><i class="fa-solid fa-check text-success me-2"></i> 100% on-ground execution</li>
+                            </ul>
+                            <button class="btn btn-outline-primary rounded-pill w-100 mt-auto fw-bold" onclick="openCategoryModal('Turnkey Management')">Hire Manager</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section-padding">
+        <div class="container">
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6 text-white">
+                    <h6 class="text-warning fw-bold text-uppercase">Get In Touch</h6>
+                    <h2 class="fw-bold fs-1 mb-4">Have Questions? Reach Out</h2>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="btn-primary rounded-circle p-3 me-3"><i class="fa-solid fa-phone fs-4"></i></div>
+                        <div>
+                            <span class="text-light opacity-75 small">Call Us Directly</span>
+                            <h5 class="fw-bold mb-0">+91 9763893141 / 9579412969</h5>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="btn-primary rounded-circle p-3 me-3"><i class="fa-solid fa-envelope fs-4"></i></div>
+                        <div>
+                            <span class="text-light opacity-75 small">Send Email</span>
+                            <h5 class="fw-bold mb-0">yv658176@gmail.com</h5>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="btn-primary rounded-circle p-3 me-3"><i class="fa-solid fa-location-dot fs-4"></i></div>
+                        <div>
+                            <span class="text-light opacity-75 small">Office Location</span>
+                            <h5 class="fw-bold mb-0">DP Road, Near Pandit Farms, Karve Nagar, Pune 411052</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="glass-card p-4 p-md-5">
+                        <h3 class="fw-bold mb-3 text-dark">Send a Message</h3>
+                        <form action="https://formsubmit.co/yv658176@gmail.com" method="POST">
+                            <input type="hidden" name="_captcha" value="false">
+                            <input type="hidden" name="_template" value="table">
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-dark">Your Name</label>
+                                <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-dark">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" placeholder="Enter your contact number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-dark">Email Address</label>
+                                <input type="email" name="email" class="form-control" placeholder="Enter your email address" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-dark">Message / Requirements</label>
+                                <textarea name="message" class="form-control" rows="4" placeholder="Tell us about your event requirement..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold">Submit Request</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="pt-5 pb-3">
+        <div class="container text-center text-md-start">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <h3 class="text-white fw-bold mb-3"><i class="fa-solid fa-compact-disc me-2 text-warning"></i>Eventify Studio</h3>
+                    <p>Your premier destination for concert tickets, party organizing, luxury venues, and complete event management in Pune.</p>
+                </div>
+                <div class="col-lg-6 text-md-end">
+                    <p class="mb-1">Direct Contact: <strong>+91 9763893141</strong></p>
+                    <p>Email: <strong>yv658176@gmail.com</strong></p>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="text-center small py-2">
+                <p class="mb-0">&copy; 2026 Eventify Studio. All Rights Reserved. Pune, Maharashtra.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FLOATING BUTTONS & CHAT WIDGET -->
+    <div id="back-to-top" class="floating-btn" onclick="scrollToTop()"><i class="fa-solid fa-arrow-up"></i></div>
+    <a href="https://wa.me/919763893141" target="_blank" id="whatsapp-btn" class="floating-btn"><i class="fa-brands fa-whatsapp"></i></a>
+    <div id="live-chat-btn" class="floating-btn" onclick="toggleLiveChat()"><i class="fa-solid fa-comments"></i></div>
+    
+    <div id="chat-widget">
+        <div class="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0">💬 Live Support</h6>
+            <button class="btn-close btn-close-white small" onclick="toggleLiveChat()"></button>
+        </div>
+        <div class="p-3 overflow-auto flex-grow-1 small" id="chatBody" style="background: #f8fafc;">
+            <div class="bg-white p-2 rounded shadow-sm mb-2">Hello! How can we help you plan your event today?</div>
+        </div>
+        <div class="p-2 border-top d-flex">
+            <input type="text" id="chatInput" class="form-control form-control-sm me-2" placeholder="Type a message...">
+            <button class="btn btn-sm btn-primary" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <!-- Seat Selection Modal -->
+    <div class="modal fade" id="seatModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold">🎟️ Interactive Seat Selection</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="bg-secondary text-white py-1 rounded mb-3 small fw-bold">STAGE THIS WAY</div>
+                    
+                    <div class="mb-3">
+                        <label class="fw-bold mb-1">Select Ticket Tier:</label>
+                        <select class="form-select form-select-sm w-75 mx-auto" id="seatTier" onchange="updateSeatPrice()">
+                            <option value="499">Comedy Pass - ₹499</option>
+                            <option value="999">Silver Tier - ₹999</option>
+                            <option value="1999">Gold Tier - ₹1,999</option>
+                            <option value="2999">Premium Tier - ₹2,999</option>
+                            <option value="4999">VIP Tier - ₹4,999</option>
+                        </select>
+                    </div>
+
+                    <div id="seatGrid" class="mb-3"></div>
+
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3 text-dark">
+                        <div>Selected: <strong id="selectedSeatCount">0</strong> seat(s)</div>
+                        <div>Total: <h4 class="fw-bold text-primary mb-0" id="seatTotalPrice">₹0</h4></div>
+                    </div>
+                    <button class="btn btn-warning w-100 mt-3 rounded-pill fw-bold" onclick="proceedToCheckout()">Proceed to Checkout &rarr;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Category / Venue Inquiry Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header bg-primary text-white rounded-top-4">
+                    <h5 class="modal-title fw-bold" id="catModalTitle">Inquire for Event</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form action="https://formsubmit.co/yv658176@gmail.com" method="POST">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" id="categorySubjectInput" name="_subject" value="New Category Event Inquiry">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Your Full Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Your Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Contact Phone Number</label>
+                            <input type="tel" name="phone" class="form-control" placeholder="Enter phone number" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Specific Requirements / Date</label>
+                            <textarea name="details" class="form-control" rows="3" placeholder="Tell us about budget, date, guest count..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold rounded-pill">Send Inquiry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Referral System Modal -->
+    <div class="modal fade" id="referralModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow text-dark">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold">🎁 Invite Friends & Earn ₹200</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p>Share your unique link with friends. Get ₹200 wallet cash on their first ticket booking!</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" value="https://eventifystudio.com/invite?ref=PUNE2026" id="refLink" readonly>
+                        <button class="btn btn-outline-primary" onclick="copyReferral()">Copy Link</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Printable E-Ticket Generation Template -->
+    <div id="ticketPDFWrapper" style="position:fixed;left:-10000px;top:0;width:760px;background:#ffffff;z-index:-1;">
+        <div id="ticketPDFTemplate" style="width:760px;box-sizing:border-box;padding:32px;background:#ffffff;color:#111827;font-family:Arial,Helvetica,sans-serif;border:2px solid #6c5ce7;border-radius:18px;">
+            <div style="text-align:center;border-bottom:2px solid #e5e7eb;padding-bottom:18px;margin-bottom:22px;">
+                <div style="font-size:30px;font-weight:800;color:#6c5ce7;">EVENTIFY STUDIO</div>
+                <div style="font-size:13px;letter-spacing:2px;color:#64748b;margin-top:5px;">OFFICIAL EVENT E-TICKET</div>
+            </div>
+
+            <div style="background:#f5f3ff;border-radius:14px;padding:18px;margin-bottom:18px;">
+                <div style="font-size:12px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Artist</div>
+                <div id="pdfArtistName" style="font-size:24px;font-weight:800;color:#111827;">AP Dhillon</div>
+
+                <div style="font-size:12px;color:#64748b;text-transform:uppercase;font-weight:700;margin-top:16px;margin-bottom:6px;">Show</div>
+                <div id="pdfShowName" style="font-size:19px;font-weight:700;color:#111827;">AP Dhillon Tour</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+                <div style="border:1px solid #e5e7eb;border-radius:12px;padding:14px;">
+                    <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;">Attendee Name</div>
+                    <div id="pdfAttendeeName" style="font-size:16px;font-weight:700;color:#111827;margin-top:5px;">John Doe</div>
+                </div>
+                <div style="border:1px solid #e5e7eb;border-radius:12px;padding:14px;">
+                    <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;">Email</div>
+                    <div id="pdfEmail" style="font-size:15px;font-weight:700;color:#111827;margin-top:5px;word-break:break-all;">customer@example.com</div>
+                </div>
+                <div style="border:1px solid #e5e7eb;border-radius:12px;padding:14px;">
+                    <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;">Date</div>
+                    <div id="pdfDate" style="font-size:16px;font-weight:700;color:#111827;margin-top:5px;">12 Nov 2026</div>
+                </div>
+                <div style="border:1px solid #e5e7eb;border-radius:12px;padding:14px;">
+                    <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;">Show Time</div>
+                    <div id="pdfTime" style="font-size:16px;font-weight:700;color:#111827;margin-top:5px;">7:00 PM</div>
+                </div>
+                <div style="border:1px solid #e5e7eb;border-radius:12px;padding:14px;">
+                    <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;">Venue</div>
+                    <div id="pdfVenue" style="font-size:15px;font-weight:700;color:#111827;margin-top:5px;">Amanora Mall Ground, Pune</div>
+                </div>
+                <div style="border:1px solid #e5e7eb;border-radius:12px;padding:14px;">
+                    <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;">Seat Number(s)</div>
+                    <div id="pdfSeat" style="font-size:16px;font-weight:700;color:#111827;margin-top:5px;">S1</div>
+                </div>
+            </div>
+
+            <div style="border-top:2px solid #e5e7eb;padding-top:18px;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-size:11px;color:#64748b;text-transform:uppercase;font-weight:700;">Total Price</div>
+                    <div id="pdfPrice" style="font-size:25px;font-weight:800;color:#6c5ce7;margin-top:4px;">₹2,499</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="display:inline-block;background:#dcfce7;color:#166534;padding:8px 18px;border-radius:999px;font-weight:800;font-size:14px;">PAID ✓</div>
+                    <div style="font-size:12px;color:#64748b;margin-top:8px;">Booking ID: <span id="pdfID">#EVT-9821</span></div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px;padding:12px;border-radius:10px;background:#f8fafc;color:#64748b;text-align:center;font-size:12px;">
+                Please carry this e-ticket and show the booking ID at the entry gate.
+            </div>
+        </div>
+    </div>
+
+    <iframe name="bookingEmailFrame" id="bookingEmailFrame" style="display:none;"></iframe>
+
+    <!-- Scripts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Custom Script Logic -->
+    <script>
+        // Cursor Glow Effect Movement Listener
+        const cursorGlow = document.getElementById('cursor-glow');
+        window.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        // Hide Glow when mouse leaves document body
+        document.addEventListener('mouseleave', () => {
+            cursorGlow.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            cursorGlow.style.opacity = '1';
+        });
+
+        // Init AOS & Loading Screen
+        window.addEventListener('load', () => {
+            document.getElementById('loading-screen').classList.add('hidden');
+            AOS.init({ duration: 800, once: true });
+            initLeafletMap();
+            initCounters();
+            initCountdowns();
+            initCategoryPills();
+        });
+
+        // Sticky Navbar scroll listener
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('mainNav');
+            const topBtn = document.getElementById('back-to-top');
+            if (window.scrollY > 80) {
+                nav.classList.add('scrolled');
+                topBtn.style.display = 'flex';
+            } else {
+                nav.classList.remove('scrolled');
+                topBtn.style.display = 'none';
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Animated Statistics Counters
+        function initCounters() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const updateCount = () => {
+                    const count = +counter.innerText.replace(/,/g, '');
+                    const inc = target / 100;
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + inc).toLocaleString('en-IN');
+                        setTimeout(updateCount, 25);
+                    } else {
+                        counter.innerText = target.toLocaleString('en-IN') + '+';
+                    }
+                };
+                updateCount();
+            });
+        }
+
+        // Live Event Countdown Timers
+        function initCountdowns() {
+            const countdowns = document.querySelectorAll('.countdown');
+            countdowns.forEach(cd => {
+                const targetDate = new Date(cd.getAttribute('data-date')).getTime();
+                setInterval(() => {
+                    const now = new Date().getTime();
+                    const diff = targetDate - now;
+                    if (diff > 0) {
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        cd.innerText = `${days}d ${hours}h ${mins}m`;
+                    } else {
+                        cd.innerText = 'Event Started';
+                    }
+                }, 1000);
+            });
+        }
+
+        // Live Search Suggestions Dropdown
+        const artists = ["Arijit Singh", "AP Dhillon", "Anuv Jain", "Karan Aujla", "Nora Fatehi", "Pranit More", "Samay Raina", "Bharatnatyam", "Dance India Dance"];
+        function handleSearchSuggestions() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const box = document.getElementById('searchSuggestions');
+            box.innerHTML = '';
+            
+            if (input.length > 0) {
+                const filtered = artists.filter(a => a.toLowerCase().includes(input));
+                if(filtered.length > 0) {
+                    box.style.display = 'block';
+                    filtered.forEach(item => {
+                        const a = document.createElement('a');
+                        a.className = 'list-group-item list-group-item-action text-dark';
+                        a.innerText = item;
+                        a.onclick = () => {
+                            document.getElementById('searchInput').value = item;
+                            box.style.display = 'none';
+                            filterEvents();
+                        };
+                        box.appendChild(a);
+                    });
+                } else {
+                    box.style.display = 'none';
+                }
+            } else {
+                box.style.display = 'none';
+            }
+            filterEvents();
+        }
+
+        // Category Tab Filter logic
+        let activeCategoryFilter = 'all';
+        function initCategoryPills() {
+            const pills = document.querySelectorAll('#eventTab .nav-link');
+            pills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    pills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    activeCategoryFilter = this.getAttribute('data-filter');
+                    filterEvents();
+                });
+            });
+        }
+
+        // Filter Logic
+        function filterEvents() {
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const locationVal = document.getElementById('locationSelect').value.toLowerCase();
+            const maxPrice = parseInt(document.getElementById('priceRange').value);
+            const typeVal = document.getElementById('typeSelect').value;
+            document.getElementById('priceVal').innerText = '₹' + maxPrice;
+
+            const events = document.querySelectorAll('.event-item');
+            events.forEach(event => {
+                const text = event.innerText.toLowerCase();
+                const price = parseInt(event.getAttribute('data-price'));
+                const type = event.getAttribute('data-type');
+                const cat = event.getAttribute('data-category');
+
+                const matchesSearch = text.includes(searchVal);
+                const matchesLocation = locationVal === "" || text.includes(locationVal);
+                const matchesPrice = price <= maxPrice;
+                const matchesType = typeVal === "" || type === typeVal;
+                const matchesCat = activeCategoryFilter === 'all' || cat === activeCategoryFilter;
+
+                if (matchesSearch && matchesLocation && matchesPrice && matchesType && matchesCat) {
+                    event.style.display = 'block';
+                } else {
+                    event.style.display = 'none';
+                }
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('locationSelect').value = '';
+            document.getElementById('typeSelect').value = '';
+            document.getElementById('priceRange').value = 5000;
+            activeCategoryFilter = 'all';
+            const pills = document.querySelectorAll('#eventTab .nav-link');
+            pills.forEach(p => p.classList.remove('active'));
+            if (pills[0]) pills[0].classList.add('active');
+            filterEvents();
+        }
+
+        // Seat Selection Modal Grid Generation
+        let currentSeatPrice = 999;
+        let selectedSeats = [];
+        let currentShowName = "";
+        let currentShowDate = "";
+        let currentShowTime = "";
+        let currentVenue = "";
+        let currentArtistName = "";
+
+        function openSeatModal(eventTitle, venue, date, time, artistName) {
+            currentShowName = eventTitle;
+            currentVenue = venue;
+            currentShowDate = date;
+            currentShowTime = time || 'Time not specified';
+            currentArtistName = artistName || eventTitle.split(' - ')[0];
+
+            const grid = document.getElementById('seatGrid');
+            grid.innerHTML = '';
+            selectedSeats = [];
+            document.getElementById('selectedSeatCount').innerText = '0';
+            document.getElementById('seatTotalPrice').innerText = '₹0';
+
+            for (let i = 1; i <= 24; i++) {
+                const seat = document.createElement('div');
+                seat.className = i % 5 === 0 ? 'seat occupied' : 'seat available';
+                seat.innerText = 'S' + i;
+                if (!seat.classList.contains('occupied')) {
+                    seat.onclick = () => toggleSeat(seat, 'S' + i);
+                }
+                grid.appendChild(seat);
+            }
+            const modal = new bootstrap.Modal(document.getElementById('seatModal'));
+            modal.show();
+        }
+
+        function updateSeatPrice() {
+            currentSeatPrice = parseInt(document.getElementById('seatTier').value);
+            calculateSeatTotal();
+        }
+
+        function toggleSeat(elem, seatNo) {
+            if (elem.classList.contains('selected')) {
+                elem.classList.remove('selected');
+                selectedSeats = selectedSeats.filter(s => s !== seatNo);
+            } else {
+                elem.classList.add('selected');
+                selectedSeats.push(seatNo);
+            }
+            calculateSeatTotal();
+        }
+
+        function calculateSeatTotal() {
+            document.getElementById('selectedSeatCount').innerText = selectedSeats.length;
+            const total = selectedSeats.length * currentSeatPrice;
+            document.getElementById('seatTotalPrice').innerText = '₹' + total.toLocaleString('en-IN');
+        }
+
+        function proceedToCheckout() {
+            if (selectedSeats.length === 0) {
+                alert('Please select at least one seat before proceeding.');
+                return;
+            }
+
+            // Ask for attendee name
+            const userName = prompt("Please enter your full name for the ticket:");
+            if (!userName || userName.trim() === "") {
+                alert("Name is required to download the ticket!");
+                return;
+            }
+
+            // Ask for attendee email
+            const userEmail = prompt("Please enter your email address. Your booking details will be sent to this email:");
+            if (!userEmail || userEmail.trim() === "") {
+                alert("Email is required!");
+                return;
+            }
+
+            const email = userEmail.trim();
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            const totalPriceVal = selectedSeats.length * currentSeatPrice;
+            const bookingID = '#EVT-' + Math.floor(1000 + Math.random() * 9000);
+
+            // Close seat modal
+            const seatModalElement = document.getElementById('seatModal');
+            const seatModalInstance = bootstrap.Modal.getInstance(seatModalElement);
+            if (seatModalInstance) seatModalInstance.hide();
+
+            const bookingData = {
+                artistName: currentArtistName || currentShowName.split(' - ')[0],
+                showName: currentShowName,
+                date: currentShowDate,
+                time: currentShowTime,
+                venue: currentVenue,
+                seatNo: selectedSeats.join(', '),
+                attendeeName: userName.trim(),
+                email: email,
+                price: '₹' + totalPriceVal.toLocaleString('en-IN'),
+                bookingID: bookingID
+            };
+
+            // Download PDF
+            generateTicketPDFCustom(bookingData);
+
+            // Send booking details to the email entered by the user
+            sendBookingEmail(bookingData);
+        }
+
+        // Send booking details using FormSubmit.
+        // The owner email receives the booking and the customer's email is CC'd.
+        function sendBookingEmail(data) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://formsubmit.co/yv658176@gmail.com';
+            form.target = 'bookingEmailFrame';
+            form.style.display = 'none';
+
+            const fields = {
+                '_captcha': 'false',
+                '_subject': 'Eventify Studio - Booking Confirmation ' + data.bookingID,
+                '_cc': data.email,
+                '_template': 'table',
+                'Booking ID': data.bookingID,
+                'Customer Name': data.attendeeName,
+                'Customer Email': data.email,
+                'Artist Name': data.artistName,
+                'Show Name': data.showName,
+                'Show Date': data.date,
+                'Show Time': data.time,
+                'Venue': data.venue,
+                'Selected Seats': data.seatNo,
+                'Total Price': data.price
+            };
+
+            Object.keys(fields).forEach(key => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = fields[key];
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+            form.remove();
+
+            setTimeout(() => {
+                alert('Booking confirmed! Your ticket PDF is downloading and the booking details have been sent to ' + data.email);
+            }, 700);
+        }
+
+        // Generate Ticket PDF download (Dashboard helper)
+        function generateTicketPDF(eventTitle, seatNo, bookingID) {
+            generateTicketPDFCustom({
+                artistName: eventTitle.split(' - ')[0],
+                showName: eventTitle,
+                date: "12 Nov 2026",
+                time: "7:00 PM",
+                venue: "Amanora Mall Ground, Pune",
+                seatNo: seatNo,
+                attendeeName: "Valued Customer",
+                email: "Not provided",
+                price: "₹2,499",
+                bookingID: bookingID
+            });
+        }
+
+        // Core Ticket PDF Generator - direct jsPDF version.
+        // This does NOT capture the hidden HTML template, so it avoids blank PDFs.
+        function generateTicketPDFCustom(data) {
+            try {
+                if (!window.jspdf || !window.jspdf.jsPDF) {
+                    alert('PDF library could not load. Please check your internet connection and try again.');
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const W = 210;
+                const left = 18;
+                const right = 192;
+                const dark = [17, 24, 39];
+                const gray = [100, 116, 139];
+                const purple = [108, 92, 231];
+                const light = [245, 243, 255];
+                const border = [220, 224, 230];
+
+                // White ticket background
+                doc.setFillColor(255, 255, 255);
+                doc.rect(0, 0, W, 297, 'F');
+
+                // Outer ticket border
+                doc.setDrawColor(...purple);
+                doc.setLineWidth(0.8);
+                doc.roundedRect(10, 10, 190, 277, 5, 5, 'S');
+
+                // Header
+                doc.setTextColor(...purple);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(23);
+                doc.text('EVENTIFY STUDIO', W / 2, 25, { align: 'center' });
+
+                doc.setTextColor(...gray);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                doc.text('OFFICIAL EVENT E-TICKET', W / 2, 32, { align: 'center' });
+
+                doc.setDrawColor(...border);
+                doc.line(left, 38, right, 38);
+
+                // Event section
+                doc.setFillColor(...light);
+                doc.roundedRect(left, 44, 174, 40, 4, 4, 'F');
+
+                doc.setTextColor(...gray);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(8);
+                doc.text('ARTIST', 24, 53);
+                doc.setTextColor(...dark);
+                doc.setFontSize(17);
+                doc.text(String(data.artistName || 'Eventify Artist'), 24, 61);
+
+                doc.setTextColor(...gray);
+                doc.setFontSize(8);
+                doc.text('SHOW', 24, 70);
+                doc.setTextColor(...dark);
+                doc.setFontSize(13);
+                const showLines = doc.splitTextToSize(String(data.showName || '-'), 158);
+                doc.text(showLines.slice(0, 2), 24, 77);
+
+                // Helper for information boxes
+                function infoBox(x, y, w, h, label, value, valueSize) {
+                    doc.setDrawColor(...border);
+                    doc.setLineWidth(0.4);
+                    doc.roundedRect(x, y, w, h, 3, 3, 'S');
+                    doc.setTextColor(...gray);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(7.5);
+                    doc.text(label.toUpperCase(), x + 5, y + 8);
+                    doc.setTextColor(...dark);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(valueSize || 10.5);
+                    const lines = doc.splitTextToSize(String(value || '-'), w - 10);
+                    doc.text(lines.slice(0, 2), x + 5, y + 16);
+                }
+
+                infoBox(18, 91, 84, 25, 'Customer Name', data.attendeeName, 10.5);
+                infoBox(108, 91, 84, 25, 'Email', data.email, 9);
+                infoBox(18, 120, 84, 25, 'Date', data.date, 10.5);
+                infoBox(108, 120, 84, 25, 'Show Time', data.time, 10.5);
+                infoBox(18, 149, 174, 25, 'Venue', data.venue, 10);
+                infoBox(18, 178, 84, 25, 'Seat Number(s)', data.seatNo, 10.5);
+                infoBox(108, 178, 84, 25, 'Booking ID', data.bookingID, 10.5);
+
+                // Price section
+                doc.setFillColor(248, 250, 252);
+                doc.roundedRect(18, 211, 174, 30, 4, 4, 'F');
+                doc.setTextColor(...gray);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(8);
+                doc.text('TOTAL PRICE', 25, 221);
+                doc.setTextColor(...purple);
+                doc.setFontSize(19);
+                // jsPDF's standard Helvetica font does not reliably contain the rupee glyph.
+                const safePrice = String(data.price || '-').replace(/₹/g, 'Rs. ');
+                doc.text(safePrice, 25, 233);
+
+                doc.setFillColor(34, 197, 94);
+                doc.roundedRect(145, 218, 38, 13, 3, 3, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(9);
+                doc.text('PAID', 164, 226.5, { align: 'center' });
+
+                // Footer
+                doc.setDrawColor(...border);
+                doc.line(left, 252, right, 252);
+                doc.setTextColor(...gray);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.text('Please present this ticket at the entry gate.', W / 2, 261, { align: 'center' });
+                doc.text('Thank you for booking with Eventify Studio.', W / 2, 268, { align: 'center' });
+
+                // Small booking ID at bottom
+                doc.setTextColor(...dark);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(8);
+                doc.text(String(data.bookingID || ''), W / 2, 278, { align: 'center' });
+
+                const filename = 'Eventify-Ticket-' + String(data.bookingID || 'Booking').replace(/[^a-zA-Z0-9-]/g, '') + '.pdf';
+                doc.save(filename);
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('PDF generation failed: ' + (error.message || error));
+            }
+        }
+
+        // Open Category/Venue Modal dynamically
+        function openCategoryModal(title) {
+            document.getElementById('catModalTitle').innerText = title;
+            document.getElementById('categorySubjectInput').value = 'Inquiry: ' + title;
+            const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+            modal.show();
+        }
+
+        // Wishlist Toggle
+        function toggleWishlist(btn) {
+            btn.classList.toggle('active');
+        }
+
+        // Copy Referral Link
+        function copyReferral() {
+            const copyText = document.getElementById('refLink');
+            copyText.select();
+            document.execCommand('copy');
+            alert('Referral link copied to clipboard: ' + copyText.value);
+        }
+
+        // Leaflet Map Initialization
+        function initLeafletMap() {
+            if(document.getElementById('leafletMap')) {
+                const map = L.map('leafletMap').setView([18.5204, 73.8567], 12);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
+
+                const venues = [
+                    { name: "JW Marriott (SB Road)", coords: [18.5314, 73.8340] },
+                    { name: "Roots9 (Baner)", coords: [18.5590, 73.7868] },
+                    { name: "Phoenix Marketcity (Viman Nagar)", coords: [18.5623, 73.9168] },
+                    { name: "Amanora Mall (Hadapsar)", coords: [18.5186, 73.9318] },
+                    { name: "Pandit Farms (Karve Nagar)", coords: [18.4913, 73.8291] }
+                ];
+
+                venues.forEach(v => {
+                    L.marker(v.coords).addTo(map).bindPopup(`<b>${v.name}</b><br>Partnered Eventify Venue.`);
+                });
+            }
+        }
+
+        // Artist Profile Details Switcher
+        function showArtist(name) {
+            const nameEl = document.getElementById('artistName');
+            const imgEl = document.getElementById('artistImg');
+            const tagEl = document.getElementById('artistTag');
+            const bioEl = document.getElementById('artistBio');
+
+            if(name === 'AP Dhillon') {
+                nameEl.innerText = "AP Dhillon";
+                imgEl.src = "https://www.baltana.com/files/wallpapers-27/AP-Dhillon-Background-Wallpaper-86503.jpg";
+                tagEl.innerText = "Indo-Canadian Rapper / Singer";
+                bioEl.innerText = "Amritpal Singh Dhillon is known globally for blending Punjabi music with modern hip-hop, synth-wave, and pop tropes. Hits include 'Brown Munde', 'Excuses', and 'Insane'.";
+            } else if(name === 'Arijit Singh') {
+                nameEl.innerText = "Arijit Singh";
+                imgEl.src = "https://wallpaperaccess.com/full/1280813.jpg";
+                tagEl.innerText = "Playback Singer & Composer";
+                bioEl.innerText = "Arijit Singh is an Indian playback singer renowned for his soulful voice and emotive delivery, having won multiple National Film Awards and Filmfare Awards.";
+            } else if(name === 'Anuv Jain') {
+                nameEl.innerText = "Anuv Jain";
+                imgEl.src = "https://rollingstoneindia.com/wp-content/uploads/2024/03/Anuv-Jain-2-960x640.jpeg";
+                tagEl.innerText = "Indie Singer-Songwriter";
+                bioEl.innerText = "Anuv Jain is an Indian independent singer-songwriter known for his minimalist acoustic tracks like 'BAARISHEIN', 'ALAG AASMAN', and 'HUSN'.";
+            } else if(name === 'Nora Fatehi') {
+                nameEl.innerText = "Nora Fatehi";
+                imgEl.src = "https://4kwallpapers.com/images/wallpapers/nora-fatehi-5120x2880-11113.jpg";
+                tagEl.innerText = "Global Dancer & Performer";
+                bioEl.innerText = "Nora Fatehi is a Moroccan-Canadian dancer, model, actress, and singer recognized for her dynamic chart-topping dance performances in Indian cinema.";
+            } else if(name === 'Karan Aujla') {
+                nameEl.innerText = "Karan Aujla";
+                imgEl.src = "https://www.rollingstone.com/wp-content/uploads/2025/05/Karan-Aujla-exclusive.jpg?crop=120px%2C0px%2C1680px%2C946px&resize=1600%2C900";
+                tagEl.innerText = "Punjabi Singer & Lyricist";
+                bioEl.innerText = "Jaskaran Singh 'Karan' Aujla is a Canadian-based Punjabi singer and lyricist known for his distinctive rap style and contemporary hits.";
+            }
+        }
+
+        // Live Chat Widget Toggle
+        function toggleLiveChat() {
+            const chatWidget = document.getElementById('chat-widget');
+            chatWidget.style.display = chatWidget.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const chatBody = document.getElementById('chatBody');
+            if (input.value.trim() !== "") {
+                const userMsg = document.createElement('div');
+                userMsg.className = 'text-end mb-2';
+                userMsg.innerHTML = `<span class="bg-primary text-white p-2 rounded d-inline-block">${input.value}</span>`;
+                chatBody.appendChild(userMsg);
+                
+                const val = input.value;
+                input.value = '';
+                chatBody.scrollTop = chatBody.scrollHeight;
+
+                setTimeout(() => {
+                    const reply = document.createElement('div');
+                    reply.className = 'bg-white p-2 rounded shadow-sm mb-2';
+                    reply.innerText = "Thanks for reaching out! Our support team has received your query regarding '" + val + "' and will connect shortly.";
+                    chatBody.appendChild(reply);
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
