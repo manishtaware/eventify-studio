@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .diagram-tab-btn.active {
+      background: #6366f1;
+      color: white;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+    .entity-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .entity-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.25);
+    }
+    .step-active {
+      border-color: #6366f1;
+      background: rgba(99, 102, 241, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-transparent text-[var(--foreground)] antialiased p-2">
+  <div class="bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-2xl p-5 shadow-2xl max-w-5xl mx-auto">
+    
+    <!-- Top Header -->
+    <div class="flex flex-wrap items-center justify-between border-b border-[var(--border)] pb-4 mb-5 gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center font-black text-xl shadow-lg">
+          📐
+        </div>
+        <div>
+          <h2 class="text-lg font-extrabold flex items-center gap-2 tracking-tight">
+            Eventify Studio — Architecture & UML Suite
+            <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+              Interactive Blueprint
+            </span>
+          </h2>
+          <p class="text-xs text-[var(--muted-foreground)]">Visual ER Data Model, UML Class Hierarchy, Step-by-Step Sequence & State Lifecycles</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-medium">
+          ✓ Academic Grade
+        </span>
+      </div>
+    </div>
+
+    <!-- Tab Bar Navigation -->
+    <div class="flex flex-wrap gap-2 p-1.5 rounded-xl bg-[var(--background)] border border-[var(--border)] mb-6">
+      <button onclick="switchTab('er')" id="tab-er" class="diagram-tab-btn active px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+        <span>📊</span> ER Data Model (7 Entities)
+      </button>
+      <button onclick="switchTab('class')" id="tab-class" class="diagram-tab-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all flex items-center gap-1.5">
+        <span>🏛️</span> UML Class Hierarchy
+      </button>
+      <button onclick="switchTab('sequence')" id="tab-sequence" class="diagram-tab-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all flex items-center gap-1.5">
+        <span>⚡</span> Sequence Timeline
+      </button>
+      <button onclick="switchTab('state')" id="tab-state" class="diagram-tab-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all flex items-center gap-1.5">
+        <span>🔄</span> Seat & Ticket Lifecycle
+      </button>
+      <button onclick="switchTab('usecase')" id="tab-usecase" class="diagram-tab-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all flex items-center gap-1.5">
+        <span>🎯</span> Use Case Map
+      </button>
+    </div>
+
+    <!-- TAB 1: ER DATA MODEL -->
+    <div id="view-er" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <p class="text-xs text-[var(--muted-foreground)]">Relational database entities with Primary Keys (<span class="text-amber-500 font-bold">PK</span>), Foreign Keys (<span class="text-cyan-500 font-bold">FK</span>), and relationship cardinalities.</p>
+        <span class="text-[11px] font-mono text-[var(--muted-foreground)]">Cardinality: 1:M, 1:1, 0..1</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        
+        <!-- Entity: EVENT -->
+        <div class="entity-card p-4 rounded-xl bg-[var(--background)] border-2 border-indigo-500/40 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5 mb-2.5">
+            <span class="font-bold text-sm text-indigo-400 flex items-center gap-1.5">
+              <span>🎤</span> EVENT
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono">Central Hub</span>
+          </div>
+          <ul class="text-xs space-y-1.5 font-mono">
+            <li class="flex items-center justify-between"><span class="text-amber-400 font-bold">PK event_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span class="text-cyan-400">FK artist_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span class="text-cyan-400">FK venue_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span>title</span> <span class="text-[var(--muted-foreground)]">VARCHAR(200)</span></li>
+            <li class="flex items-center justify-between"><span>event_date</span> <span class="text-[var(--muted-foreground)]">DATE</span></li>
+            <li class="flex items-center justify-between"><span>show_time</span> <span class="text-[var(--muted-foreground)]">TIME</span></li>
+            <li class="flex items-center justify-between"><span>total_seats</span> <span class="text-emerald-400">50 (Cap)</span></li>
+          </ul>
+          <div class="mt-3 pt-2 border-t border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">
+            🔗 Contains <strong>50 SEATS</strong> | Generates <strong>M BOOKINGS</strong>
+          </div>
+        </div>
+
+        <!-- Entity: SEAT -->
+        <div class="entity-card p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] shadow-sm">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5 mb-2.5">
+            <span class="font-bold text-sm text-amber-400 flex items-center gap-1.5">
+              <span>💺</span> SEAT
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">50 Per Event</span>
+          </div>
+          <ul class="text-xs space-y-1.5 font-mono">
+            <li class="flex items-center justify-between"><span class="text-amber-400 font-bold">PK seat_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span class="text-cyan-400">FK event_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span>seat_number</span> <span class="text-emerald-400">'A1'..'E10'</span></li>
+            <li class="flex items-center justify-between"><span>row_label</span> <span class="text-[var(--muted-foreground)]">'A'..'E'</span></li>
+            <li class="flex items-center justify-between"><span>tier</span> <span class="text-[var(--muted-foreground)]">Silver..VIP</span></li>
+            <li class="flex items-center justify-between"><span>status</span> <span class="text-pink-400">'available'/'occupied'</span></li>
+          </ul>
+          <div class="mt-3 pt-2 border-t border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">
+            🔗 Belongs to <strong>1 EVENT</strong> | Atomic state locked
+          </div>
+        </div>
+
+        <!-- Entity: BOOKING -->
+        <div class="entity-card p-4 rounded-xl bg-[var(--background)] border-2 border-emerald-500/40 shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5 mb-2.5">
+            <span class="font-bold text-sm text-emerald-400 flex items-center gap-1.5">
+              <span>🎟️</span> BOOKING
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">Transaction</span>
+          </div>
+          <ul class="text-xs space-y-1.5 font-mono">
+            <li class="flex items-center justify-between"><span class="text-amber-400 font-bold">PK booking_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span>booking_ref</span> <span class="text-emerald-400">'#EVT-XXXX'</span></li>
+            <li class="flex items-center justify-between"><span class="text-cyan-400">FK user_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span class="text-cyan-400">FK event_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span class="text-cyan-400">FK promo_id</span> <span class="text-[var(--muted-foreground)]">Nullable</span></li>
+            <li class="flex items-center justify-between"><span>total_paid</span> <span class="text-emerald-400">INTEGER</span></li>
+            <li class="flex items-center justify-between"><span>qr_hash</span> <span class="text-purple-400">SHA256 URL</span></li>
+          </ul>
+          <div class="mt-3 pt-2 border-t border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">
+            🔗 Reserves <strong>1..8 SEATS</strong> | Dispatches QR PDF
+          </div>
+        </div>
+
+        <!-- Entity: USER -->
+        <div class="entity-card p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] shadow-sm">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5 mb-2.5">
+            <span class="font-bold text-sm text-blue-400 flex items-center gap-1.5">
+              <span>👤</span> USER / ATTENDEE
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono">Actor</span>
+          </div>
+          <ul class="text-xs space-y-1.5 font-mono">
+            <li class="flex items-center justify-between"><span class="text-amber-400 font-bold">PK user_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span>full_name</span> <span class="text-cyan-400">Sanitized XSS</span></li>
+            <li class="flex items-center justify-between"><span>email</span> <span class="text-[var(--muted-foreground)]">VARCHAR(150)</span></li>
+            <li class="flex items-center justify-between"><span>phone</span> <span class="text-[var(--muted-foreground)]">[0-9]{10}</span></li>
+            <li class="flex items-center justify-between"><span>role</span> <span class="text-[var(--muted-foreground)]">'attendee'/'org'</span></li>
+          </ul>
+          <div class="mt-3 pt-2 border-t border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">
+            🔗 Places <strong>M BOOKINGS</strong> | Syncs Ticket Wallet
+          </div>
+        </div>
+
+        <!-- Entity: VENUE -->
+        <div class="entity-card p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] shadow-sm">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5 mb-2.5">
+            <span class="font-bold text-sm text-emerald-400 flex items-center gap-1.5">
+              <span>🏰</span> VENUE (PUNE)
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">8 Partnered</span>
+          </div>
+          <ul class="text-xs space-y-1.5 font-mono">
+            <li class="flex items-center justify-between"><span class="text-amber-400 font-bold">PK venue_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span>name</span> <span class="text-[var(--muted-foreground)]">JW Marriott, Roots9..</span></li>
+            <li class="flex items-center justify-between"><span>daily_rate</span> <span class="text-emerald-400">₹95K - ₹2.1L</span></li>
+            <li class="flex items-center justify-between"><span>facilities</span> <span class="text-indigo-400">5-Point List</span></li>
+            <li class="flex items-center justify-between"><span>coordinates</span> <span class="text-[var(--muted-foreground)]">Leaflet [Lat,Lng]</span></li>
+          </ul>
+          <div class="mt-3 pt-2 border-t border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">
+            🔗 Hosts <strong>M EVENTS</strong> | Dedicated rental modal
+          </div>
+        </div>
+
+        <!-- Entity: PROMO_CODE -->
+        <div class="entity-card p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] shadow-sm">
+          <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5 mb-2.5">
+            <span class="font-bold text-sm text-pink-400 flex items-center gap-1.5">
+              <span>🏷️</span> PROMO_CODE
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 font-mono">Discount</span>
+          </div>
+          <ul class="text-xs space-y-1.5 font-mono">
+            <li class="flex items-center justify-between"><span class="text-amber-400 font-bold">PK promo_id</span> <span class="text-[var(--muted-foreground)]">UUID</span></li>
+            <li class="flex items-center justify-between"><span>code</span> <span class="text-pink-400">'PUNE2026', 'VIPPASS'</span></li>
+            <li class="flex items-center justify-between"><span>discount_type</span> <span class="text-[var(--muted-foreground)]">'flat' / 'percent'</span></li>
+            <li class="flex items-center justify-between"><span>discount_val</span> <span class="text-emerald-400">₹200 / 15%</span></li>
+            <li class="flex items-center justify-between"><span>min_cart</span> <span class="text-[var(--muted-foreground)]">₹1,000 / ₹2,500</span></li>
+          </ul>
+          <div class="mt-3 pt-2 border-t border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">
+            🔗 Deducts from <strong>BOOKING.subtotal</strong>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: UML CLASS HIERARCHY -->
+    <div id="view-class" class="hidden space-y-4">
+      <p class="text-xs text-[var(--muted-foreground)]">Object-Oriented Design: Class boundaries, encapsulation, and operations across Domain, Services, and State Controllers.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <!-- Column 1: Domain Entities -->
+        <div class="space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+            <span>📦</span> Domain Models
+          </div>
+          
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] font-mono text-xs">
+            <div class="font-bold text-sm text-[var(--foreground)] border-b border-[var(--border)] pb-1 mb-2">class Event</div>
+            <div class="text-[11px] text-[var(--muted-foreground)] space-y-1 mb-2">
+              <div>- String eventId</div>
+              <div>- String title</div>
+              <div>- Venue venue</div>
+              <div>- List&lt;Seat&gt; seatMatrix [50]</div>
+            </div>
+            <div class="border-t border-[var(--border)] pt-2 text-[11px] text-indigo-400 space-y-1">
+              <div>+ getAvailableCount(): int</div>
+              <div>+ lockSeats(seatIds): bool</div>
+              <div>+ releaseSeats(seatIds): void</div>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] font-mono text-xs">
+            <div class="font-bold text-sm text-[var(--foreground)] border-b border-[var(--border)] pb-1 mb-2">class Seat</div>
+            <div class="text-[11px] text-[var(--muted-foreground)] space-y-1 mb-2">
+              <div>- String seatId (A1..E10)</div>
+              <div>- SeatTier tier</div>
+              <div>- SeatStatus status</div>
+            </div>
+            <div class="border-t border-[var(--border)] pt-2 text-[11px] text-indigo-400 space-y-1">
+              <div>+ select(): void</div>
+              <div>+ markOccupied(): void</div>
+              <div>+ release(): void</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Business Logic & Controllers -->
+        <div class="space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+            <span>⚙️</span> Controllers & Engines
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] font-mono text-xs">
+            <div class="font-bold text-sm text-[var(--foreground)] border-b border-[var(--border)] pb-1 mb-2">class BookingController</div>
+            <div class="text-[11px] text-[var(--muted-foreground)] space-y-1 mb-2">
+              <div>- List&lt;Seat&gt; selectedSeats (max 8)</div>
+              <div>- PromoEngine promoEngine</div>
+            </div>
+            <div class="border-t border-[var(--border)] pt-2 text-[11px] text-emerald-400 space-y-1">
+              <div>+ toggleSeat(id): void</div>
+              <div>+ applyPromo(code): int</div>
+              <div>+ submitBooking(form): Ticket</div>
+              <div>+ cancelBooking(id): void</div>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] font-mono text-xs">
+            <div class="font-bold text-sm text-[var(--foreground)] border-b border-[var(--border)] pb-1 mb-2">class PromoEngine</div>
+            <div class="text-[11px] text-[var(--muted-foreground)] space-y-1 mb-2">
+              <div>- Map&lt;String, Coupon&gt; codes</div>
+            </div>
+            <div class="border-t border-[var(--border)] pt-2 text-[11px] text-emerald-400 space-y-1">
+              <div>+ validate(code, subtotal): bool</div>
+              <div>+ computeDiscount(): int</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Output Services & Security -->
+        <div class="space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+            <span>🛡️</span> Services & Telemetry
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] font-mono text-xs">
+            <div class="font-bold text-sm text-[var(--foreground)] border-b border-[var(--border)] pb-1 mb-2">class TicketPDFService</div>
+            <div class="text-[11px] text-[var(--muted-foreground)] space-y-1 mb-2">
+              <div>- jsPDF docInstance</div>
+              <div>- QRCode canvasEngine</div>
+            </div>
+            <div class="border-t border-[var(--border)] pt-2 text-[11px] text-purple-400 space-y-1">
+              <div>+ embedQRCode(verifyUrl): void</div>
+              <div>+ renderPassDetails(booking): void</div>
+              <div>+ saveAsPDF(filename): void</div>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] font-mono text-xs">
+            <div class="font-bold text-sm text-[var(--foreground)] border-b border-[var(--border)] pb-1 mb-2">class TelemetryService</div>
+            <div class="text-[11px] text-[var(--muted-foreground)] space-y-1 mb-2">
+              <div>- LocalStorage stateStore</div>
+            </div>
+            <div class="border-t border-[var(--border)] pt-2 text-[11px] text-purple-400 space-y-1">
+              <div>+ filterByEvent(title): List</div>
+              <div>+ calculateRevenue(): int</div>
+              <div>+ exportCSV(): Blob</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: SEQUENCE TIMELINE -->
+    <div id="view-sequence" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <p class="text-xs text-[var(--muted-foreground)]">Step-by-step chronological runtime flow of a ticket reservation transaction.</p>
+        <span class="text-[11px] px-2.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-semibold">End-to-End Pipeline</span>
+      </div>
+
+      <div class="space-y-2.5">
+        <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--background)] flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</div>
+          <div class="text-xs">
+            <strong class="text-[var(--foreground)]">Modal Initialization & Dynamic Seat Lock Fetch</strong>
+            <p class="text-[var(--muted-foreground)] mt-0.5">User clicks "Select Seats". <code>openSeatModal()</code> queries <code>localStorage</code> for <code>getShowBookedSeats(showName)</code>. Any previously booked seats are merged with default pre-booked seats and rendered in gray as unclickable.</p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--background)] flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</div>
+          <div class="text-xs">
+            <strong class="text-[var(--foreground)]">Seat Selection & Anti-Scalping Constraint Check</strong>
+            <p class="text-[var(--muted-foreground)] mt-0.5">User toggles seats (e.g. <code>A1, A2</code>). <code>toggleSeat()</code> validates that <code>selectedSeats.length &lt;= 8</code>. Attempting to choose a 9th seat triggers an immediate alert boundary.</p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--background)] flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</div>
+          <div class="text-xs">
+            <strong class="text-[var(--foreground)]">Promo Code Discount Application</strong>
+            <p class="text-[var(--muted-foreground)] mt-0.5">User inputs coupon <code>PUNE2026</code>. <code>applyPromoCode()</code> verifies cart threshold and deducts ₹200 live from the itemized checkout breakdown.</p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--background)] flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</div>
+          <div class="text-xs">
+            <strong class="text-[var(--foreground)]">Input Sanitization (XSS Defense) & Atomic Commit</strong>
+            <p class="text-[var(--muted-foreground)] mt-0.5">User submits attendee details. Strings pass through <code>escapeHtml()</code>. <code>addShowBookedSeats()</code> commits the seat IDs to storage, permanently locking them for that show.</p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--background)] flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">5</div>
+          <div class="text-xs">
+            <strong class="text-[var(--foreground)]">QRCode.js Canvas Synthesis & jsPDF Pass Download</strong>
+            <p class="text-[var(--muted-foreground)] mt-0.5">Generates a scannable verification QR Code data URL and writes an official e-ticket pass with gate-entry security marks, downloading immediately to the user's computer.</p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--background)] flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full bg-pink-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">6</div>
+          <div class="text-xs">
+            <strong class="text-[var(--foreground)]">Real-Time Organizer Telemetry & Calendar Sync</strong>
+            <p class="text-[var(--muted-foreground)] mt-0.5">Fires background <code>FormSubmit</code> email, wires up 1-click Google Calendar sync, and notifies <code>loadOrganizerDashboard()</code> to increment revenue and render the attendee in the roster table.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: STATE MACHINE -->
+    <div id="view-state" class="hidden space-y-4">
+      <p class="text-xs text-[var(--muted-foreground)]">Finite State Machine (FSM): Transitions and lifecycle states of individual seats and digital tickets.</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 text-center">
+        <div class="p-3.5 rounded-xl bg-[var(--background)] border border-emerald-500/40">
+          <div class="text-emerald-400 font-bold text-xs mb-1">1. AVAILABLE</div>
+          <div class="text-[11px] text-[var(--muted-foreground)]">Default state. Seat can be clicked. Displayed in light gray.</div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-[var(--background)] border border-indigo-500/40">
+          <div class="text-indigo-400 font-bold text-xs mb-1">2. SELECTED</div>
+          <div class="text-[11px] text-[var(--muted-foreground)]">Active in user cart (1 to 8 seats). Displayed in bright green.</div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-[var(--background)] border border-amber-500/40">
+          <div class="text-amber-400 font-bold text-xs mb-1">3. IN CHECKOUT</div>
+          <div class="text-[11px] text-[var(--muted-foreground)]">Held during attendee form entry & promo code calculation.</div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-[var(--background)] border border-purple-500/40">
+          <div class="text-purple-400 font-bold text-xs mb-1">4. BOOKED / OCCUPIED</div>
+          <div class="text-[11px] text-[var(--muted-foreground)]">Committed to storage. Permanently gray & disabled across modals.</div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-[var(--background)] border border-pink-500/40">
+          <div class="text-pink-400 font-bold text-xs mb-1">5. RELEASED</div>
+          <div class="text-[11px] text-[var(--muted-foreground)]">Triggered via "Cancel Pass" in Wallet. Reverts to AVAILABLE.</div>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] text-xs">
+        <div class="font-bold text-[var(--foreground)] mb-1 flex items-center gap-1.5">
+          <span>💡</span> State Reversibility Guarantee:
+        </div>
+        <p class="text-[var(--muted-foreground)] leading-relaxed">
+          When an attendee clicks <strong>"Cancel Pass"</strong> in <code>dashboards.html</code>, the state engine calls <code>removeShowBookedSeats()</code>, purging the seat numbers from storage, incrementing the show's capacity badge, and returning those seats to the <code>AVAILABLE</code> pool with zero page reload.
+        </p>
+      </div>
+    </div>
+
+    <!-- TAB 5: USE CASE MAP -->
+    <div id="view-usecase" class="hidden space-y-4">
+      <p class="text-xs text-[var(--muted-foreground)]">System Boundary Actors and Core Functional Use Cases.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+          <div class="font-bold text-sm text-indigo-400 mb-2 flex items-center gap-1.5">
+            <span>👤</span> Attendee Use Cases
+          </div>
+          <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 list-disc list-inside">
+            <li>Browse 9 Pune concerts & standups</li>
+            <li>Filter by Singing, Dance & Comedy</li>
+            <li>Select seats on 50-seat matrix</li>
+            <li>Apply promo codes (PUNE2026)</li>
+            <li>Receive PDF ticket with QR code</li>
+            <li>Sync show to Google Calendar</li>
+            <li>Cancel booking & release seats</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+          <div class="font-bold text-sm text-emerald-400 mb-2 flex items-center gap-1.5">
+            <span>👔</span> Organizer Use Cases
+          </div>
+          <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 list-disc list-inside">
+            <li>View real-time gross ticket revenue</li>
+            <li>Filter attendee rosters per show</li>
+            <li>Export attendee lists to CSV</li>
+            <li>Simulate test bookings live</li>
+            <li>Re-download attendee tickets</li>
+            <li>Request turnkey management quote</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+          <div class="font-bold text-sm text-amber-400 mb-2 flex items-center gap-1.5">
+            <span>🏰</span> Venue Manager Use Cases
+          </div>
+          <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 list-disc list-inside">
+            <li>Display transparent daily pricing</li>
+            <li>List included facilities (DG power, sound)</li>
+            <li>Receive tailored reservation requests</li>
+            <li>Display interactive Leaflet coordinates</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div class="mt-6 pt-4 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-3">
+      <div class="text-xs text-[var(--muted-foreground)]">
+        Direct GitHub Reference: <code class="px-2 py-0.5 rounded bg-[var(--background)] border border-[var(--border)] text-indigo-400">docs/ARCHITECTURE_AND_DIAGRAMS.md</code>
+      </div>
+      <a href="https://github.com/manishtaware/eventify-studio/blob/main/docs/ARCHITECTURE_AND_DIAGRAMS.md" target="_blank" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow">
+        <span>View Full Markdown on GitHub</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      const tabs = ['er', 'class', 'sequence', 'state', 'usecase'];
+      tabs.forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tab-' + t);
+        if (t === tabId) {
+          view.classList.remove('hidden');
+          btn.classList.add('active');
+          btn.classList.remove('text-[var(--muted-foreground)]');
+        } else {
+          view.classList.add('hidden');
+          btn.classList.remove('active');
+          btn.classList.add('text-[var(--muted-foreground)]');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
