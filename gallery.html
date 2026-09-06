@@ -3256,6 +3256,17 @@
             });
         }
 
+                // HTML Sanitization helper for XSS Defense
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         // ==================== BOOKINGS DATA STORE & DASHBOARD TELEMETRY ====================
         const initialSampleBookings = [
             {
@@ -3330,7 +3341,7 @@
                                 </div>
                                 <h6 class="fw-bold mb-1 text-dark">${b.showName}</h6>
                                 <p class="small text-muted mb-1"><i class="fa-solid fa-location-dot me-1 text-danger"></i>${b.venue}</p>
-                                <p class="small text-muted mb-2">Booking ID: <strong>${b.bookingID}</strong> | Seats: <strong>${b.seatNo}</strong> | Attendee: ${b.attendeeName}</p>
+                                <p class="small text-muted mb-2">Booking ID: <strong>${escapeHtml(b.bookingID)}</strong> | Seats: <strong>${escapeHtml(b.seatNo)}</strong> | Attendee: ${escapeHtml(b.attendeeName)}</p>
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-sm btn-primary rounded-pill fw-bold" onclick='generateTicketPDFCustom(${JSON.stringify(b)})'>
                                         <i class="fa-solid fa-download me-1"></i>Download Ticket
@@ -3470,25 +3481,25 @@ Managed by Eventify Studio Pune.`);
             bookings.forEach(b => {
                 html += `
                 <tr>
-                    <td class="ps-3"><strong class="text-primary">${b.bookingID}</strong></td>
+                    <td class="ps-3"><strong class="text-primary">${escapeHtml(b.bookingID)}</strong></td>
                     <td>
-                        <div class="fw-bold text-dark"><i class="fa-solid fa-circle-user text-secondary me-1"></i>${b.attendeeName}</div>
-                        <span class="text-muted" style="font-size:0.75rem;">Booked: ${b.bookedAt || 'Recently'}</span>
+                        <div class="fw-bold text-dark"><i class="fa-solid fa-circle-user text-secondary me-1"></i>${escapeHtml(b.attendeeName)}</div>
+                        <span class="text-muted" style="font-size:0.75rem;">Booked: ${escapeHtml(b.bookedAt || 'Recently')}</span>
                     </td>
                     <td>
-                        <div><i class="fa-solid fa-envelope text-muted me-1"></i>${b.email}</div>
-                        <div class="text-muted"><i class="fa-solid fa-phone text-muted me-1"></i>${b.phone || 'N/A'}</div>
+                        <div><i class="fa-solid fa-envelope text-muted me-1"></i>${escapeHtml(b.email)}</div>
+                        <div class="text-muted"><i class="fa-solid fa-phone text-muted me-1"></i>${escapeHtml(b.phone || 'N/A')}</div>
                     </td>
                     <td>
-                        <div class="fw-semibold text-dark">${b.showName}</div>
-                        <span class="text-muted" style="font-size:0.75rem;">${b.venue}</span>
+                        <div class="fw-semibold text-dark">${escapeHtml(b.showName)}</div>
+                        <span class="text-muted" style="font-size:0.75rem;">${escapeHtml(b.venue)}</span>
                     </td>
                     <td>
-                        <span class="badge bg-light text-dark border fw-bold">${b.seatNo}</span>
+                        <span class="badge bg-light text-dark border fw-bold">${escapeHtml(b.seatNo)}</span>
                     </td>
                     <td>
-                        <strong class="text-success">${b.price}</strong>
-                        <div class="text-muted" style="font-size:0.72rem;">${b.paymentMethod || 'Online'}</div>
+                        <strong class="text-success">${escapeHtml(b.price)}</strong>
+                        <div class="text-muted" style="font-size:0.72rem;">${escapeHtml(b.paymentMethod || 'Online')}</div>
                     </td>
                     <td>
                         <span class="badge bg-success bg-opacity-25 text-success">Confirmed ✓</span>
