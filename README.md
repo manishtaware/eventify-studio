@@ -11,6 +11,7 @@
 
 ## 📌 Table of Contents
 1. [System Architecture & Data Flow](#-system-architecture--data-flow)
+2. [📐 Full ER & UML Diagrams Specification](docs/ARCHITECTURE_AND_DIAGRAMS.md)
 2. [Core Feature Breakdown](#-core-feature-breakdown)
 3. [Security & Defensive Engineering](#-security--defensive-engineering)
 4. [File Structure](#-file-structure)
