@@ -835,9 +835,11 @@
                     <div class="col-md-3">
                         <label class="small fw-semibold">Sort By</label>
                         <select class="form-select bg-dark text-white border-secondary" id="sortSelect" onchange="filterEvents()">
-                            <option value="date">Date (Upcoming)</option>
+                            <option value="date" selected>Date: Soonest (Upcoming First)</option>
+                            <option value="dateDesc">Date: Furthest (Later First)</option>
                             <option value="priceLow">Price: Low to High</option>
                             <option value="priceHigh">Price: High to Low</option>
+                            <option value="nameAsc">Artist / Event Name: A to Z</option>
                         </select>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
@@ -850,7 +852,7 @@
             <div class="row g-4" id="eventsContainer">
 
                 <!-- 1. AP Dhillon -->
-                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2499" data-type="Outdoor" data-title="AP Dhillon">
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2499" data-type="Outdoor" data-title="AP Dhillon" data-date="2026-11-12T19:00:00">
                     <div class="event-card" data-aos="fade-up">
                         <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
@@ -862,6 +864,7 @@
                                 ⏳ Starts In: <span class="countdown" data-date="2026-11-12T19:00:00">Calculating...</span>
                             </div>
                             <h5 class="fw-bold mb-1">AP Dhillon - One Out Of One Tour</h5>
+                            <p class="text-warning small mb-2 fw-semibold"><i class="fa-regular fa-calendar-days me-1"></i>12 Nov 2026 • 7:00 PM</p>
                             <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Amanora Mall Ground, Pune</p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.9 (1.2K Reviews)</span>
@@ -888,7 +891,7 @@
                 </div>
 
                 <!-- 2. Arijit Singh -->
-                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2999" data-type="Outdoor" data-title="Arijit Singh">
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2999" data-type="Outdoor" data-title="Arijit Singh" data-date="2026-12-24T18:00:00">
                     <div class="event-card" data-aos="fade-up" data-aos-delay="100">
                         <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
@@ -900,6 +903,7 @@
                                 ⏳ Starts In: <span class="countdown" data-date="2026-12-24T18:00:00">Calculating...</span>
                             </div>
                             <h5 class="fw-bold mb-1">Arijit Singh - Soulful Symphony</h5>
+                            <p class="text-warning small mb-2 fw-semibold"><i class="fa-regular fa-calendar-days me-1"></i>24 Dec 2026 • 6:00 PM</p>
                             <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Pandit Farms, DP Road, Pune</p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-success bg-opacity-25 text-success">⭐ 5.0 (2.8K Reviews)</span>
@@ -926,7 +930,7 @@
                 </div>
 
                 <!-- 3. Anuv Jain -->
-                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="1499" data-type="Indoor" data-title="Anuv Jain">
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="1499" data-type="Indoor" data-title="Anuv Jain" data-date="2026-12-18T18:30:00">
                     <div class="event-card" data-aos="fade-up" data-aos-delay="200">
                         <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
@@ -938,6 +942,7 @@
                                 ⏳ Starts In: <span class="countdown" data-date="2026-12-18T18:30:00">Calculating...</span>
                             </div>
                             <h5 class="fw-bold mb-1">Anuv Jain - Live in Concert</h5>
+                            <p class="text-warning small mb-2 fw-semibold"><i class="fa-regular fa-calendar-days me-1"></i>18 Dec 2026 • 6:30 PM</p>
                             <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>JW Marriott Ballroom, Pune</p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.9 (980 Reviews)</span>
@@ -964,7 +969,7 @@
                 </div>
 
                 <!-- 4. Nora Fatehi -->
-                <div class="col-md-6 col-lg-4 event-item" data-category="dance" data-price="1999" data-type="Outdoor" data-title="Nora Fatehi">
+                <div class="col-md-6 col-lg-4 event-item" data-category="dance" data-price="1999" data-type="Outdoor" data-title="Nora Fatehi" data-date="2026-11-28T18:30:00">
                     <div class="event-card" data-aos="fade-up">
                         <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
@@ -976,6 +981,7 @@
                                 ⏳ Starts In: <span class="countdown" data-date="2026-11-28T18:30:00">Calculating...</span>
                             </div>
                             <h5 class="fw-bold mb-1">Nora Fatehi - Dance Fever Live</h5>
+                            <p class="text-warning small mb-2 fw-semibold"><i class="fa-regular fa-calendar-days me-1"></i>28 Nov 2026 • 6:30 PM</p>
                             <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Phoenix Marketcity, Pune</p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.9 (1.8K Reviews)</span>
@@ -1002,7 +1008,7 @@
                 </div>
 
                 <!-- 5. Bharatnatyam Group -->
-                <div class="col-md-6 col-lg-4 event-item" data-category="dance" data-price="699" data-type="Indoor" data-title="Bharatnatyam">
+                <div class="col-md-6 col-lg-4 event-item" data-category="dance" data-price="699" data-type="Indoor" data-title="Bharatnatyam" data-date="2026-12-10T17:30:00">
                     <div class="event-card" data-aos="fade-up" data-aos-delay="100">
                         <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
@@ -1014,6 +1020,7 @@
                                 ⏳ Starts In: <span class="countdown" data-date="2026-12-10T17:30:00">Calculating...</span>
                             </div>
                             <h5 class="fw-bold mb-1">Bharatnatyam - Classical Dance Night</h5>
+                            <p class="text-warning small mb-2 fw-semibold"><i class="fa-regular fa-calendar-days me-1"></i>10 Dec 2026 • 5:30 PM</p>
                             <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Grand Orchid Hall, Viman Nagar, Pune</p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.7 (430 Reviews)</span>
@@ -1040,7 +1047,7 @@
                 </div>
 
                 <!-- 6. KR$NA Rap Concert Show (Link accurately fixed to KR$NA) -->
-                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="1199" data-type="Indoor" data-title="KR$NA Rap Concert">
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="1199" data-type="Indoor" data-title="KR$NA Rap Concert" data-date="2026-12-15T18:00:00">
                     <div class="event-card" data-aos="fade-up" data-aos-delay="200">
                         <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
@@ -1052,6 +1059,7 @@
                                 ⏳ Starts In: <span class="countdown" data-date="2026-12-15T18:00:00">Calculating...</span>
                             </div>
                             <h5 class="fw-bold mb-1">KR$NA Rap Concert Show</h5>
+                            <p class="text-warning small mb-2 fw-semibold"><i class="fa-regular fa-calendar-days me-1"></i>15 Dec 2026 • 6:00 PM</p>
                             <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>JW Marriott Ballroom, SB Road, Pune</p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.8 (1.5K Reviews)</span>
@@ -1078,7 +1086,7 @@
                 </div>
 
                 <!-- 7. Karan Aujla -->
-                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2199" data-type="Outdoor" data-title="Karan Aujla">
+                <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2199" data-type="Outdoor" data-title="Karan Aujla" data-date="2026-11-20T19:30:00">
                     <div class="event-card" data-aos="fade-up">
                         <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
@@ -1090,6 +1098,7 @@
                                 ⏳ Starts In: <span class="countdown" data-date="2026-11-20T19:30:00">Calculating...</span>
                             </div>
                             <h5 class="fw-bold mb-1">Karan Aujla - Making Memories Tour</h5>
+                            <p class="text-warning small mb-2 fw-semibold"><i class="fa-regular fa-calendar-days me-1"></i>20 Nov 2026 • 7:30 PM</p>
                             <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Roots9 Arena, Baner, Pune</p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.9 (3.1K Reviews)</span>
@@ -1116,7 +1125,7 @@
                 </div>
 
                 <!-- 8. Pranit More -->
-                <div class="col-md-6 col-lg-4 event-item" data-category="comedy" data-price="599" data-type="Indoor" data-title="Pranit More">
+                <div class="col-md-6 col-lg-4 event-item" data-category="comedy" data-price="599" data-type="Indoor" data-title="Pranit More" data-date="2026-12-08T20:00:00">
                     <div class="event-card" data-aos="fade-up" data-aos-delay="100">
                         <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
@@ -1128,6 +1137,7 @@
                                 ⏳ Starts In: <span class="countdown" data-date="2026-12-08T20:00:00">Calculating...</span>
                             </div>
                             <h5 class="fw-bold mb-1">Pranit More Comedy Live</h5>
+                            <p class="text-warning small mb-2 fw-semibold"><i class="fa-regular fa-calendar-days me-1"></i>08 Dec 2026 • 8:00 PM</p>
                             <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>Roots9 Arena, Baner, Pune</p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.8 (850 Reviews)</span>
@@ -1154,7 +1164,7 @@
                 </div>
 
                 <!-- 9. Samay Raina -->
-                <div class="col-md-6 col-lg-4 event-item" data-category="comedy" data-price="799" data-type="Indoor" data-title="Samay Raina">
+                <div class="col-md-6 col-lg-4 event-item" data-category="comedy" data-price="799" data-type="Indoor" data-title="Samay Raina" data-date="2026-12-05T20:00:00">
                     <div class="event-card" data-aos="fade-up" data-aos-delay="200">
                         <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
@@ -1166,6 +1176,7 @@
                                 ⏳ Starts In: <span class="countdown" data-date="2026-12-05T20:00:00">Calculating...</span>
                             </div>
                             <h5 class="fw-bold mb-1">Samay Raina - Unfiltered Comedy</h5>
+                            <p class="text-warning small mb-2 fw-semibold"><i class="fa-regular fa-calendar-days me-1"></i>05 Dec 2026 • 8:00 PM</p>
                             <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>JW Marriott Auditorium, Pune</p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-success bg-opacity-25 text-success">⭐ 4.9 (2.1K Reviews)</span>
@@ -2482,6 +2493,7 @@
             loadDashboardWallet();
             loadOrganizerDashboard();
             updateEventCardCapacities();
+            filterEvents();
             parseUrlSearchParams();
         });
 
@@ -2622,40 +2634,107 @@
             });
         }
 
-        // Filter Events function
+                // Filter & Sort Events function (Upcoming Dates, Price, Name)
         function filterEvents() {
+            const container = document.getElementById('eventsContainer');
+            if (!container) return;
+
             const searchInput = document.getElementById('searchInput');
             const locationSelect = document.getElementById('locationSelect');
             const priceRange = document.getElementById('priceRange');
             const typeSelect = document.getElementById('typeSelect');
-            if (!searchInput) return;
+            const sortSelect = document.getElementById('sortSelect');
 
-            const searchVal = searchInput.value.toLowerCase();
-            const locationVal = locationSelect ? locationSelect.value.toLowerCase() : "";
+            const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : "";
+            const locationVal = locationSelect ? locationSelect.value.toLowerCase().trim() : "";
             const maxPrice = priceRange ? parseInt(priceRange.value) : 5000;
             const typeVal = typeSelect ? typeSelect.value : "";
+            const sortVal = sortSelect ? sortSelect.value : "date";
+
             const priceValEl = document.getElementById('priceVal');
             if (priceValEl) priceValEl.innerText = '₹' + maxPrice;
 
-            const events = document.querySelectorAll('.event-item');
+            const events = Array.from(container.querySelectorAll('.event-item'));
+            let visibleCount = 0;
+
+            // 1. Filter visibility
             events.forEach(event => {
                 const text = event.innerText.toLowerCase();
-                const price = parseInt(event.getAttribute('data-price'));
-                const type = event.getAttribute('data-type');
-                const cat = event.getAttribute('data-category');
+                const price = parseInt(event.getAttribute('data-price')) || 0;
+                const type = event.getAttribute('data-type') || "";
+                const cat = event.getAttribute('data-category') || "";
 
-                const matchesSearch = text.includes(searchVal);
-                const matchesLocation = locationVal === "" || text.includes(locationVal);
+                const matchesSearch = !searchVal || text.includes(searchVal);
+                const matchesLocation = !locationVal || text.includes(locationVal);
                 const matchesPrice = price <= maxPrice;
-                const matchesType = typeVal === "" || type === typeVal;
-                const matchesCat = activeCategoryFilter === 'all' || cat === activeCategoryFilter;
+                const matchesType = !typeVal || type === typeVal;
+                const matchesCat = (typeof activeCategoryFilter === 'undefined' || activeCategoryFilter === 'all' || cat === activeCategoryFilter);
 
                 if (matchesSearch && matchesLocation && matchesPrice && matchesType && matchesCat) {
                     event.style.display = 'block';
+                    visibleCount++;
                 } else {
                     event.style.display = 'none';
                 }
             });
+
+            // 2. Sort elements
+            events.sort((a, b) => {
+                const parseDate = el => {
+                    const dAttr = el.getAttribute('data-date');
+                    if (dAttr) return new Date(dAttr).getTime();
+                    const cd = el.querySelector('[data-date]');
+                    if (cd) return new Date(cd.getAttribute('data-date')).getTime();
+                    return 0;
+                };
+
+                const parsePrice = el => parseInt(el.getAttribute('data-price')) || 0;
+                const parseTitle = el => (el.getAttribute('data-title') || el.innerText || '').toLowerCase();
+
+                if (sortVal === 'date' || sortVal === 'dateAsc') {
+                    return parseDate(a) - parseDate(b);
+                } else if (sortVal === 'dateDesc') {
+                    return parseDate(b) - parseDate(a);
+                } else if (sortVal === 'priceLow') {
+                    return parsePrice(a) - parsePrice(b);
+                } else if (sortVal === 'priceHigh') {
+                    return parsePrice(b) - parsePrice(a);
+                } else if (sortVal === 'nameAsc') {
+                    return parseTitle(a).localeCompare(parseTitle(b));
+                }
+                return 0;
+            });
+
+            // 3. Re-append in sorted order (DOM nodes repositioned cleanly)
+            events.forEach(event => container.appendChild(event));
+
+            // 4. Handle "No Results" feedback
+            let noResultsMsg = document.getElementById('noEventsAlert');
+            if (visibleCount === 0) {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.id = 'noEventsAlert';
+                    noResultsMsg.className = 'col-12 text-center py-5';
+                    noResultsMsg.innerHTML = `
+                        <div class="p-5 rounded-4 bg-secondary bg-opacity-10 border border-secondary border-opacity-25">
+                            <i class="fa-solid fa-calendar-xmark fa-3x text-warning mb-3"></i>
+                            <h4 class="fw-bold">No Concerts or Shows Match Your Filters</h4>
+                            <p class="text-muted">Try clearing your search query, increasing price limit, or resetting filters.</p>
+                            <button class="btn btn-warning rounded-pill px-4 fw-bold mt-2" onclick="resetFilters()">Reset All Filters</button>
+                        </div>
+                    `;
+                    container.appendChild(noResultsMsg);
+                } else {
+                    noResultsMsg.style.display = 'block';
+                    container.appendChild(noResultsMsg);
+                }
+            } else if (noResultsMsg) {
+                noResultsMsg.style.display = 'none';
+            }
+
+            if (window.AOS && typeof AOS.refresh === 'function') {
+                AOS.refresh();
+            }
         }
 
         function resetFilters() {
@@ -2663,6 +2742,7 @@
             if (document.getElementById('locationSelect')) document.getElementById('locationSelect').value = '';
             if (document.getElementById('typeSelect')) document.getElementById('typeSelect').value = '';
             if (document.getElementById('priceRange')) document.getElementById('priceRange').value = 5000;
+            if (document.getElementById('sortSelect')) document.getElementById('sortSelect').value = 'date';
             activeCategoryFilter = 'all';
             const pills = document.querySelectorAll('#eventTab .nav-link');
             pills.forEach(p => p.classList.remove('active'));
