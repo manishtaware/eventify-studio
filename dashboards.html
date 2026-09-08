@@ -296,6 +296,63 @@
             margin-right: 4px;
             margin-bottom: 4px;
         }
+
+        /* Mobile & Tablet Responsive Optimizations */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: rgba(15, 23, 42, 0.97);
+                padding: 1.2rem;
+                border-radius: 14px;
+                margin-top: 0.75rem;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            }
+            .navbar-nav .nav-link {
+                padding: 0.6rem 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem !important;
+                line-height: 1.25 !important;
+            }
+            .hero-banner {
+                min-height: auto !important;
+                padding-top: 85px !important;
+                padding-bottom: 35px !important;
+            }
+            #cursor-glow {
+                display: none !important;
+            }
+            .section-padding {
+                padding: 50px 0 !important;
+            }
+            body[data-page="events"] #events,
+            body[data-page="venues"] #venues,
+            body[data-page="organize"] #services-booking,
+            body[data-page="gallery"] #gallery,
+            body[data-page="blogs"] #blogs,
+            body[data-page="dashboards"] #dashboards,
+            body[data-page="contact"] #contact {
+                padding-top: 85px !important;
+            }
+            #seatMapContainer {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+                padding: 8px 0;
+            }
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+            .lead {
+                font-size: 1rem !important;
+            }
+            .btn-lg {
+                padding: 0.55rem 1.1rem !important;
+                font-size: 0.95rem !important;
+            }
+        }
     </style>
 
     <!-- Page Specific Visibility & Routing Rules -->
