@@ -195,36 +195,204 @@
             max-width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 6px 0;
+            padding: 8px 4px;
         }
+        .seat-row-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            transition: all 0.25s ease;
+            border-radius: 8px;
+            padding: 3px 6px;
+        }
+        .seat-row-wrap:hover {
+            background: rgba(108, 92, 231, 0.05);
+        }
+        .seat-row-badge {
+            min-width: 155px;
+            text-align: left;
+        }
+        .seat-row-badge-end {
+            min-width: 65px;
+            text-align: right;
+        }
+        .seat-row-pill {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .seat-row-pill.pill-vip { background: #f3e8ff; color: #6b21a8; border: 1px solid #c084fc; }
+        .seat-row-pill.pill-premium { background: #eff6ff; color: #1e40af; border: 1px solid #93c5fd; }
+        .seat-row-pill.pill-gold { background: #fefce8; color: #854d0e; border: 1px solid #fde047; }
+        .seat-row-pill.pill-silver { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+
         .seat {
-            width: 28px; height: 28px;
-            border-radius: 5px;
+            width: 29px; height: 29px;
+            border-radius: 6px;
             margin: 2px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 0.72rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             user-select: none;
-            transition: all 0.15s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
-        .seat.available { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
-        .seat.available:hover { background: #a29bfe; color: white; transform: scale(1.12); }
-        .seat.selected { background: #22c55e !important; color: white !important; font-weight: bold; border-color: #16a34a !important; transform: scale(1.15); box-shadow: 0 0 8px rgba(34, 197, 94, 0.6); }
-        .seat.occupied { background: #94a3b8; color: #cbd5e1; cursor: not-allowed; opacity: 0.45; }
-        .seat-row-label {
-            width: 22px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #64748b;
-            display: inline-block;
-            text-align: center;
+        /* Color-Coded Tiers */
+        .seat.tier-vip {
+            background: #faf5ff;
+            color: #6b21a8;
+            border: 2px solid #a855f7;
+            box-shadow: 0 1px 3px rgba(168, 85, 247, 0.2);
+        }
+        .seat.tier-vip:hover {
+            background: #8b5cf6;
+            color: white;
+            border-color: #7c3aed;
+            transform: translateY(-2px) scale(1.15);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
+            z-index: 5;
+        }
+
+        .seat.tier-premium {
+            background: #f0f9ff;
+            color: #0369a1;
+            border: 2px solid #0284c7;
+            box-shadow: 0 1px 3px rgba(2, 132, 199, 0.2);
+        }
+        .seat.tier-premium:hover {
+            background: #0284c7;
+            color: white;
+            border-color: #0369a1;
+            transform: translateY(-2px) scale(1.15);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.5);
+            z-index: 5;
+        }
+
+        .seat.tier-gold {
+            background: #fffbeb;
+            color: #b45309;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
+        }
+        .seat.tier-gold:hover {
+            background: #f59e0b;
+            color: #1e293b;
+            border-color: #d97706;
+            transform: translateY(-2px) scale(1.15);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+            z-index: 5;
+        }
+
+        .seat.tier-silver {
+            background: #f8fafc;
+            color: #334155;
+            border: 2px solid #94a3b8;
+            box-shadow: 0 1px 3px rgba(148, 163, 184, 0.2);
+        }
+        .seat.tier-silver:hover {
+            background: #64748b;
+            color: white;
+            border-color: #475569;
+            transform: translateY(-2px) scale(1.15);
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.5);
+            z-index: 5;
+        }
+
+        /* Visual Dimming & Highlighting on Tier Filter */
+        .seat.tier-dimmed {
+            opacity: 0.22 !important;
+            filter: grayscale(85%) !important;
+            transform: scale(0.92) !important;
+            box-shadow: none !important;
+        }
+        .seat.tier-highlighted {
+            transform: scale(1.12);
+            box-shadow: 0 0 12px rgba(234, 179, 8, 0.7) !important;
+            animation: pulseHighlight 1.8s infinite alternate;
+            z-index: 3;
+        }
+        @keyframes pulseHighlight {
+            0% { box-shadow: 0 0 6px rgba(108, 92, 231, 0.4); }
+            100% { box-shadow: 0 0 14px rgba(234, 179, 8, 0.85); }
+        }
+
+        /* Selected & Occupied States */
+        .seat.selected {
+            background: #22c55e !important;
+            color: white !important;
+            font-weight: 800 !important;
+            border: 2px solid #15803d !important;
+            transform: translateY(-2px) scale(1.22) !important;
+            box-shadow: 0 0 14px rgba(34, 197, 94, 0.85) !important;
+            z-index: 10 !important;
+            opacity: 1 !important;
+            filter: none !important;
+        }
+        .seat.occupied {
+            background: #e2e8f0 !important;
+            color: #94a3b8 !important;
+            border: 1px dashed #cbd5e1 !important;
+            cursor: not-allowed !important;
+            opacity: 0.45 !important;
+            box-shadow: none !important;
+            text-decoration: line-through;
         }
         .seat-aisle {
             width: 14px;
             display: inline-block;
+        }
+
+        /* Tier Filter Pills */
+        .tier-filter-pill {
+            border-radius: 50rem;
+            padding: 5px 14px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid #cbd5e1;
+            background: white;
+            color: #475569;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .tier-filter-pill:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+            transform: translateY(-1px);
+        }
+        .tier-filter-pill.active {
+            background: #0f172a !important;
+            color: white !important;
+            border-color: #0f172a !important;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.35);
+        }
+        .tier-filter-pill.pill-vip.active { background: #7c3aed !important; border-color: #6d28d9 !important; box-shadow: 0 4px 14px rgba(124, 58, 237, 0.45); }
+        .tier-filter-pill.pill-premium.active { background: #0284c7 !important; border-color: #0369a1 !important; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.45); }
+        .tier-filter-pill.pill-gold.active { background: #d97706 !important; border-color: #b45309 !important; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.45); }
+        .tier-filter-pill.pill-silver.active { background: #475569 !important; border-color: #334155 !important; box-shadow: 0 4px 14px rgba(71, 85, 105, 0.45); }
+
+        /* Legend items */
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            font-size: 0.76rem;
+            transition: all 0.15s ease;
+        }
+        .legend-item.clickable:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+            cursor: pointer;
         }
 
         /* Custom Floating Widgets */
@@ -351,6 +519,30 @@
             .btn-lg {
                 padding: 0.55rem 1.1rem !important;
                 font-size: 0.95rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .seat-row-badge {
+                min-width: 85px !important;
+            }
+            .seat-row-pill {
+                font-size: 0.62rem !important;
+                padding: 2px 4px !important;
+                white-space: nowrap;
+            }
+            .seat {
+                width: 25px !important;
+                height: 25px !important;
+                font-size: 0.66rem !important;
+                margin: 1px !important;
+            }
+            .seat-aisle {
+                width: 8px !important;
+            }
+            .tier-filter-pill {
+                font-size: 0.72rem !important;
+                padding: 4px 10px !important;
             }
         }
     </style>
@@ -2090,44 +2282,90 @@
                 </div>
                 <div class="modal-body p-4 text-dark">
                     
-                    <!-- STEP 1: Seat Map & Tier Selection -->
+                    <!-- STEP 1: Seat Map & Interactive Tier Selection -->
                     <div id="seatSelectStep">
-                        <div class="stage-screen">STAGE / SCREEN THIS WAY ▲</div>
                         
-                        <div class="row g-2 mb-3 align-items-center justify-content-center">
-                            <div class="col-md-7 text-center">
-                                <label class="fw-bold mb-1 small text-muted">Select Ticket Tier:</label>
-                                <select class="form-select form-select-sm mx-auto" id="seatTier" onchange="updateSeatPrice()">
-                                    <option value="999">Silver Tier - ₹999</option>
-                                    <option value="1999">Gold Tier - ₹1,999</option>
-                                    <option value="2999">Premium Tier - ₹2,999</option>
-                                    <option value="4999">VIP Tier - ₹4,999</option>
-                                </select>
+                        <!-- Tier Filter Pills -->
+                        <div class="mb-3 text-center">
+                            <label class="fw-bold mb-2 small text-muted d-block text-uppercase" style="letter-spacing: 0.5px;">
+                                <i class="fa-solid fa-layer-group text-warning me-1"></i>Select or Filter Tier to Highlight Seats:
+                            </label>
+                            <div class="d-flex flex-wrap justify-content-center gap-2" id="seatTierFilterPills">
+                                <button type="button" class="tier-filter-pill active" data-tier="all" onclick="filterSeatsByTier('all')">
+                                    ✨ All Tiers (50 Seats)
+                                </button>
+                                <button type="button" class="tier-filter-pill pill-vip" data-tier="vip" onclick="filterSeatsByTier('vip')">
+                                    👑 VIP • ₹4,999 (Row A)
+                                </button>
+                                <button type="button" class="tier-filter-pill pill-premium" data-tier="premium" onclick="filterSeatsByTier('premium')">
+                                    💎 Premium • ₹2,999 (Row B)
+                                </button>
+                                <button type="button" class="tier-filter-pill pill-gold" data-tier="gold" onclick="filterSeatsByTier('gold')">
+                                    ⭐ Gold • ₹1,999 (Row C)
+                                </button>
+                                <button type="button" class="tier-filter-pill pill-silver" data-tier="silver" onclick="filterSeatsByTier('silver')">
+                                    🎫 Silver • ₹999 (Rows D & E)
+                                </button>
                             </div>
                         </div>
 
-                        <!-- Responsive Seat Grid Container -->
-                        <div class="seat-grid-container mb-2 text-center">
-                            <div id="seatGrid" class="d-inline-block"></div>
+                        <!-- Active Tier Banner -->
+                        <div id="tierStatusBanner" class="alert alert-light border shadow-sm py-2 px-3 small text-center mb-3 rounded-3">
+                            <span class="text-muted"><i class="fa-solid fa-circle-info text-primary me-1"></i>Click any tier above to highlight seats, or click seats directly on the map to book.</span>
                         </div>
 
-                        <!-- Seat Legend -->
-                        <div class="d-flex justify-content-center gap-3 small text-muted mb-3">
-                            <div><span class="seat available d-inline-flex m-0 align-middle" style="width:16px;height:16px;"></span> Available</div>
-                            <div><span class="seat selected d-inline-flex m-0 align-middle" style="width:16px;height:16px;"></span> Selected</div>
-                            <div><span class="seat occupied d-inline-flex m-0 align-middle" style="width:16px;height:16px;"></span> Occupied</div>
+                        <div class="stage-screen">STAGE / SCREEN THIS WAY ▲</div>
+
+                        <!-- Responsive Seat Grid Container -->
+                        <div class="seat-grid-container mb-3 text-center">
+                            <div id="seatGrid" class="d-inline-block" style="max-width: 620px; width: 100%;"></div>
+                        </div>
+
+                        <!-- Interactive Seat Legend -->
+                        <div class="d-flex flex-wrap justify-content-center gap-2 small text-muted mb-3">
+                            <div class="legend-item clickable" onclick="filterSeatsByTier('vip')" title="Click to highlight VIP seats">
+                                <span class="seat tier-vip d-inline-flex m-0 align-middle" style="width:18px;height:18px;font-size:0.65rem;">A</span>
+                                <span>👑 VIP (₹4,999)</span>
+                            </div>
+                            <div class="legend-item clickable" onclick="filterSeatsByTier('premium')" title="Click to highlight Premium seats">
+                                <span class="seat tier-premium d-inline-flex m-0 align-middle" style="width:18px;height:18px;font-size:0.65rem;">B</span>
+                                <span>💎 Premium (₹2,999)</span>
+                            </div>
+                            <div class="legend-item clickable" onclick="filterSeatsByTier('gold')" title="Click to highlight Gold seats">
+                                <span class="seat tier-gold d-inline-flex m-0 align-middle" style="width:18px;height:18px;font-size:0.65rem;">C</span>
+                                <span>⭐ Gold (₹1,999)</span>
+                            </div>
+                            <div class="legend-item clickable" onclick="filterSeatsByTier('silver')" title="Click to highlight Silver seats">
+                                <span class="seat tier-silver d-inline-flex m-0 align-middle" style="width:18px;height:18px;font-size:0.65rem;">D</span>
+                                <span>🎫 Silver (₹999)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="seat selected d-inline-flex m-0 align-middle" style="width:18px;height:18px;font-size:0.65rem;">✓</span>
+                                <span>Selected</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="seat occupied d-inline-flex m-0 align-middle" style="width:18px;height:18px;font-size:0.65rem;">✕</span>
+                                <span>Occupied</span>
+                            </div>
                         </div>
 
                         <div id="seatSelectionAlert" class="alert alert-danger py-2 small d-none mb-3">
                             <i class="fa-solid fa-triangle-exclamation me-1"></i>Please select at least one seat before proceeding.
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center border-top pt-3 text-dark">
-                            <div>Selected: <strong id="selectedSeatCount" class="text-primary fs-5">0</strong> seat(s)</div>
-                            <div>Total: <h4 class="fw-bold text-primary mb-0 d-inline" id="seatTotalPrice">₹0</h4></div>
+                        <!-- Live Selection Summary Card -->
+                        <div class="bg-light p-3 rounded-3 border mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small text-muted fw-semibold">Selected Seats (<span id="selectedSeatCount">0</span>/8):</span>
+                                <span class="small fw-bold text-dark text-truncate ms-2" id="selectedSeatsSummaryText" style="max-width: 65%;">None selected</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
+                                <span class="fw-bold text-dark">Estimated Total:</span>
+                                <h4 class="fw-bold text-primary mb-0" id="seatTotalPrice">₹0</h4>
+                            </div>
                         </div>
 
-                        <button class="btn btn-warning w-100 mt-3 rounded-pill fw-bold py-2 shadow-sm" onclick="goToCheckoutStep()">
+                        <button class="btn btn-warning w-100 rounded-pill fw-bold py-2 shadow-sm" onclick="goToCheckoutStep()">
                             Proceed to Attendee Details &rarr;
                         </button>
                     </div>
@@ -2142,6 +2380,7 @@
                                 <div class="col-6">Venue: <strong class="text-dark" id="summaryVenue">-</strong></div>
                                 <div class="col-6">Date & Time: <strong class="text-dark" id="summaryDateTime">-</strong></div>
                                 <div class="col-6">Seats: <strong class="text-dark" id="summarySeats">-</strong></div>
+                                <div class="col-12">Tier Breakdown: <span class="text-dark fw-semibold small" id="summaryTierBreakdown">-</span></div>
                                 <div class="col-6">Subtotal: <span class="text-dark fw-semibold" id="summarySubtotal">₹0</span></div>
                                 <div class="col-6">Promo Discount: <span class="text-success fw-bold" id="summaryDiscount">₹0</span></div>
                                 <div class="col-12 border-top pt-2 mt-2 d-flex justify-content-between align-items-center">
@@ -2814,6 +3053,23 @@
                     if (loc) loc.value = v;
                 }
                 filterEvents();
+
+                // Direct URL Deep-linking for seat booking and tier testing
+                if (params.has('book')) {
+                    setTimeout(() => {
+                        openSeatModal('AP Dhillon - One Out Of One Tour', 'Amanora Mall Ground, Pune', '12 Nov 2026', '7:00 PM', 'AP Dhillon');
+                        if (params.has('tier')) {
+                            filterSeatsByTier(params.get('tier'));
+                        }
+                        if (params.has('select')) {
+                            const seatsToSelect = params.get('select').split(',');
+                            seatsToSelect.forEach(sId => {
+                                const seatEl = document.querySelector(`[data-seat-id="${sId}"]`);
+                                if (seatEl) toggleSeat(seatEl, sId);
+                            });
+                        }
+                    }, 450);
+                }
             }
         }
 
@@ -3010,6 +3266,28 @@
             });
         }
 
+        // Tier Configuration Constants
+        const SEAT_TIER_CONFIG = {
+            'A': { tier: 'VIP', name: 'VIP Tier', price: 4999, icon: '👑', color: '#8b5cf6', pillClass: 'pill-vip', badgeText: 'Row A • 👑 VIP (₹4,999)' },
+            'B': { tier: 'Premium', name: 'Premium Tier', price: 2999, icon: '💎', color: '#0284c7', pillClass: 'pill-premium', badgeText: 'Row B • 💎 Premium (₹2,999)' },
+            'C': { tier: 'Gold', name: 'Gold Tier', price: 1999, icon: '⭐', color: '#d97706', pillClass: 'pill-gold', badgeText: 'Row C • ⭐ Gold (₹1,999)' },
+            'D': { tier: 'Silver', name: 'Silver Tier', price: 999, icon: '🎫', color: '#64748b', pillClass: 'pill-silver', badgeText: 'Row D • 🎫 Silver (₹999)' },
+            'E': { tier: 'Silver', name: 'Silver Tier', price: 999, icon: '🎫', color: '#64748b', pillClass: 'pill-silver', badgeText: 'Row E • 🎫 Silver (₹999)' }
+        };
+
+        let activeSeatTierFilter = 'all';
+
+        function getSeatTierInfo(seatId) {
+            const row = seatId.charAt(0).toUpperCase();
+            return SEAT_TIER_CONFIG[row] || { tier: 'Silver', name: 'Silver Tier', price: 999, icon: '🎫', color: '#64748b' };
+        }
+
+        function getSelectedSeatsSubtotal() {
+            return selectedSeats.reduce((acc, seatId) => {
+                return acc + getSeatTierInfo(seatId).price;
+            }, 0);
+        }
+
         function openSeatModal(eventTitle, venue, date, time, artistName) {
             currentShowName = eventTitle;
             currentVenue = venue;
@@ -3018,6 +3296,7 @@
             currentArtistName = artistName || eventTitle.split(' - ')[0];
             currentDiscount = 0;
             appliedPromoCode = "";
+            activeSeatTierFilter = 'all';
 
             document.getElementById('seatModalTitle').innerText = '🎟️ ' + currentShowName;
             document.getElementById('seatModalSubtitle').innerText = currentVenue + ' | ' + currentShowDate;
@@ -3032,12 +3311,27 @@
             if (document.getElementById('promoCodeInput')) document.getElementById('promoCodeInput').value = '';
             if (document.getElementById('promoMessage')) document.getElementById('promoMessage').classList.add('d-none');
 
-            // Generate 50 seats prototype grid (Rows A to E, 10 columns with central aisle)
+            // Reset filter pills
+            const pills = document.querySelectorAll('#seatTierFilterPills .tier-filter-pill');
+            pills.forEach(p => p.classList.remove('active'));
+            const allPill = document.querySelector('#seatTierFilterPills [data-tier="all"]');
+            if (allPill) allPill.classList.add('active');
+
+            // Reset tier banner
+            const banner = document.getElementById('tierStatusBanner');
+            if (banner) {
+                banner.className = 'alert alert-light border shadow-sm py-2 px-3 small text-center mb-3 rounded-3';
+                banner.innerHTML = '<span class="text-muted"><i class="fa-solid fa-circle-info text-primary me-1"></i>Click any tier above to highlight seats, or click seats directly on the map to book.</span>';
+            }
+
+            // Generate 50 seats prototype grid (Rows A to E, 10 columns with central aisle & row badges)
             const grid = document.getElementById('seatGrid');
             grid.innerHTML = '';
             selectedSeats = [];
             document.getElementById('selectedSeatCount').innerText = '0';
             document.getElementById('seatTotalPrice').innerText = '₹0';
+            const sumText = document.getElementById('selectedSeatsSummaryText');
+            if (sumText) sumText.innerText = 'None selected';
 
             const rows = ['A', 'B', 'C', 'D', 'E'];
             const defaultOccupied = ['A3', 'A8', 'B4', 'B9', 'C2', 'C7', 'D5', 'E1', 'E6', 'E10'];
@@ -3045,47 +3339,114 @@
             const occupiedSeats = [...new Set([...defaultOccupied, ...dynamicOccupied])];
 
             rows.forEach(r => {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'd-flex align-items-center justify-content-center mb-1';
+                const tierInfo = SEAT_TIER_CONFIG[r];
+                const rowWrap = document.createElement('div');
+                rowWrap.className = 'seat-row-wrap';
+                rowWrap.setAttribute('data-row', r);
+                rowWrap.setAttribute('data-tier', tierInfo.tier.toLowerCase());
 
-                const label = document.createElement('span');
-                label.className = 'seat-row-label me-1';
-                label.innerText = r;
-                rowDiv.appendChild(label);
+                // Left row tier badge
+                const badgeCol = document.createElement('div');
+                badgeCol.className = 'seat-row-badge';
+                badgeCol.innerHTML = `<span class="seat-row-pill ${tierInfo.pillClass}">${tierInfo.badgeText}</span>`;
+                rowWrap.appendChild(badgeCol);
+
+                // Middle seats container
+                const seatsCol = document.createElement('div');
+                seatsCol.className = 'd-flex align-items-center justify-content-center';
 
                 for (let c = 1; c <= 10; c++) {
                     const seatId = r + c;
                     const isOccupied = occupiedSeats.includes(seatId);
 
                     const seat = document.createElement('div');
-                    seat.className = isOccupied ? 'seat occupied' : 'seat available';
+                    seat.className = isOccupied ? 'seat occupied' : `seat tier-${tierInfo.tier.toLowerCase()}`;
                     seat.innerText = c;
                     seat.setAttribute('data-seat-id', seatId);
-                    seat.title = `Seat ${seatId} (${isOccupied ? 'Occupied / Booked' : 'Available'})`;
+                    seat.setAttribute('data-row', r);
+                    seat.setAttribute('data-tier', tierInfo.tier.toLowerCase());
+                    seat.setAttribute('data-price', tierInfo.price);
+                    seat.title = `Seat ${seatId} • ${tierInfo.icon} ${tierInfo.name} (₹${tierInfo.price.toLocaleString('en-IN')}) • ${isOccupied ? 'Occupied / Booked' : 'Available'}`;
 
                     if (!isOccupied) {
                         seat.onclick = () => toggleSeat(seat, seatId);
                     }
 
-                    rowDiv.appendChild(seat);
+                    seatsCol.appendChild(seat);
 
                     // Central walk-aisle between seats 5 & 6
                     if (c === 5) {
                         const aisle = document.createElement('div');
                         aisle.className = 'seat-aisle';
-                        rowDiv.appendChild(aisle);
+                        seatsCol.appendChild(aisle);
                     }
                 }
-                grid.appendChild(rowDiv);
+                rowWrap.appendChild(seatsCol);
+
+                // Right price indicator
+                const endCol = document.createElement('div');
+                endCol.className = 'seat-row-badge-end d-none d-md-block';
+                endCol.innerHTML = `<span class="fw-bold text-muted small">₹${tierInfo.price.toLocaleString('en-IN')}</span>`;
+                rowWrap.appendChild(endCol);
+
+                grid.appendChild(rowWrap);
             });
 
             const modal = new bootstrap.Modal(document.getElementById('seatModal'));
             modal.show();
         }
 
-        function updateSeatPrice() {
-            currentSeatPrice = parseInt(document.getElementById('seatTier').value);
-            calculateSeatTotal();
+        // Filter and Highlight Seats by Tier (VIP, Premium, Gold, Silver, All)
+        function filterSeatsByTier(tier) {
+            activeSeatTierFilter = tier;
+            const pills = document.querySelectorAll('#seatTierFilterPills .tier-filter-pill');
+            pills.forEach(p => {
+                if (p.getAttribute('data-tier') === tier) {
+                    p.classList.add('active');
+                } else {
+                    p.classList.remove('active');
+                }
+            });
+
+            const allSeats = document.querySelectorAll('#seatGrid .seat');
+            const banner = document.getElementById('tierStatusBanner');
+
+            if (tier === 'all') {
+                allSeats.forEach(s => {
+                    s.classList.remove('tier-dimmed', 'tier-highlighted');
+                });
+                if (banner) {
+                    banner.className = 'alert alert-light border shadow-sm py-2 px-3 small text-center mb-3 rounded-3';
+                    banner.innerHTML = '<span class="text-dark fw-semibold"><i class="fa-solid fa-sparkles text-warning me-1"></i>Showing All 50 Seats Across All Tiers (VIP ₹4,999, Premium ₹2,999, Gold ₹1,999, Silver ₹999). Click any seat to book!</span>';
+                }
+            } else {
+                let countTier = 0;
+                allSeats.forEach(s => {
+                    const sTier = s.getAttribute('data-tier');
+                    if (sTier === tier) {
+                        s.classList.remove('tier-dimmed');
+                        if (!s.classList.contains('occupied')) {
+                            s.classList.add('tier-highlighted');
+                            countTier++;
+                        }
+                    } else {
+                        s.classList.remove('tier-highlighted');
+                        s.classList.add('tier-dimmed');
+                    }
+                });
+
+                const infoMap = {
+                    'vip': { name: '👑 VIP Tier (Row A)', price: '₹4,999', alertClass: 'alert-primary', note: 'Front row prime circle, unlimited beverages & fast-track pass' },
+                    'premium': { name: '💎 Premium Tier (Row B)', price: '₹2,999', alertClass: 'alert-info', note: 'Front stalls acoustic seating with dedicated access' },
+                    'gold': { name: '⭐ Gold Tier (Row C)', price: '₹1,999', alertClass: 'alert-warning', note: 'Middle row arena view with prime sightlines' },
+                    'silver': { name: '🎫 Silver Tier (Rows D & E)', price: '₹999', alertClass: 'alert-secondary', note: 'Standard amphitheater back lawn seating' }
+                };
+                const info = infoMap[tier];
+                if (banner && info) {
+                    banner.className = `alert ${info.alertClass} border shadow-sm py-2 px-3 small text-center mb-3 rounded-3 fw-semibold`;
+                    banner.innerHTML = `<span><strong>${info.name}</strong> @ <span class="badge bg-dark text-white px-2 py-1">${info.price}/seat</span> — ${info.note}.</span>`;
+                }
+            }
         }
 
         function toggleSeat(elem, seatNo) {
@@ -3111,8 +3472,21 @@
 
         function calculateSeatTotal() {
             document.getElementById('selectedSeatCount').innerText = selectedSeats.length;
-            const total = selectedSeats.length * currentSeatPrice;
-            document.getElementById('seatTotalPrice').innerText = '₹' + total.toLocaleString('en-IN');
+            const subtotal = getSelectedSeatsSubtotal();
+            document.getElementById('seatTotalPrice').innerText = '₹' + subtotal.toLocaleString('en-IN');
+
+            const sumText = document.getElementById('selectedSeatsSummaryText');
+            if (sumText) {
+                if (selectedSeats.length === 0) {
+                    sumText.innerText = 'None selected';
+                } else {
+                    const breakdown = selectedSeats.map(s => {
+                        const inf = getSeatTierInfo(s);
+                        return `${s} (${inf.tier} ₹${inf.price.toLocaleString('en-IN')})`;
+                    }).join(', ');
+                    sumText.innerText = breakdown;
+                }
+            }
         }
 
         // Promo Code Discount Engine
@@ -3122,7 +3496,7 @@
             if (!input || !msg) return;
 
             const code = input.value.trim().toUpperCase();
-            const subtotal = selectedSeats.length * currentSeatPrice;
+            const subtotal = getSelectedSeatsSubtotal();
 
             if (!code) {
                 msg.className = 'small mt-1 text-danger';
@@ -3172,7 +3546,7 @@
         }
 
         function updateCheckoutTotals() {
-            const subtotal = selectedSeats.length * currentSeatPrice;
+            const subtotal = getSelectedSeatsSubtotal();
             const finalTotal = Math.max(0, subtotal - currentDiscount);
             const subEl = document.getElementById('summarySubtotal');
             const discEl = document.getElementById('summaryDiscount');
@@ -3196,6 +3570,14 @@
             document.getElementById('summaryDateTime').innerText = currentShowDate + ' at ' + currentShowTime;
             document.getElementById('summarySeats').innerText = selectedSeats.join(', ') + ' (' + selectedSeats.length + ' seats)';
             
+            const tierBreakdownEl = document.getElementById('summaryTierBreakdown');
+            if (tierBreakdownEl) {
+                tierBreakdownEl.innerText = selectedSeats.map(s => {
+                    const inf = getSeatTierInfo(s);
+                    return `${s}: ${inf.icon} ${inf.tier} (₹${inf.price.toLocaleString('en-IN')})`;
+                }).join(', ');
+            }
+
             currentDiscount = 0;
             appliedPromoCode = "";
             updateCheckoutTotals();
@@ -3236,9 +3618,13 @@
 
             errorAlert.classList.add('d-none');
 
-            const subtotalVal = selectedSeats.length * currentSeatPrice;
+            const subtotalVal = getSelectedSeatsSubtotal();
             const finalPriceVal = Math.max(0, subtotalVal - currentDiscount);
             const bookingID = '#EVT-' + Math.floor(1000 + Math.random() * 9000);
+            const tierBreakdownStr = selectedSeats.map(s => {
+                const inf = getSeatTierInfo(s);
+                return `${s} [${inf.tier}]`;
+            }).join(', ');
 
             const bookingData = {
                 artistName: currentArtistName,
@@ -3246,7 +3632,7 @@
                 date: currentShowDate,
                 time: currentShowTime,
                 venue: currentVenue,
-                seatNo: selectedSeats.join(', '),
+                seatNo: selectedSeats.join(', ') + (tierBreakdownStr ? ` (${tierBreakdownStr})` : ''),
                 attendeeName: name,
                 email: email,
                 phone: phone,
