@@ -334,6 +334,23 @@
             opacity: 1 !important;
             filter: none !important;
         }
+        
+        /* Interactive Card & Seat Animations */
+        .cursor-pointer { cursor: pointer !important; }
+        .event-card { cursor: pointer; }
+        .event-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 36px rgba(108, 92, 231, 0.22) !important;
+        }
+        @keyframes seatShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+        .seat-shake {
+            animation: seatShake 0.4s ease-in-out !important;
+        }
+
         .seat.occupied {
             background: #e2e8f0 !important;
             color: #94a3b8 !important;
@@ -1219,10 +1236,10 @@
                     <h2 class="fw-bold fs-1 text-white mb-0">Featured Concerts & Shows</h2>
                 </div>
                 <ul class="nav nav-pills custom-pills mt-3 mt-md-0" id="eventTab">
-                    <li class="nav-item"><button class="nav-link active" data-filter="all">All Shows</button></li>
-                    <li class="nav-item"><button class="nav-link" data-filter="singing">Singing & Rap</button></li>
-                    <li class="nav-item"><button class="nav-link" data-filter="dance">Dance Shows</button></li>
-                    <li class="nav-item"><button class="nav-link" data-filter="comedy">Comedy</button></li>
+                    <li class="nav-item"><button class="nav-link active" data-filter="all" onclick="setCategoryFilter('all', this)">All Shows</button></li>
+                    <li class="nav-item"><button class="nav-link" data-filter="singing" onclick="setCategoryFilter('singing', this)">Singing & Rap</button></li>
+                    <li class="nav-item"><button class="nav-link" data-filter="dance" onclick="setCategoryFilter('dance', this)">Dance Shows</button></li>
+                    <li class="nav-item"><button class="nav-link" data-filter="comedy" onclick="setCategoryFilter('comedy', this)">Comedy</button></li>
                 </ul>
             </div>
 
@@ -1262,8 +1279,8 @@
 
                 <!-- 1. AP Dhillon -->
                 <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2499" data-type="Outdoor" data-title="AP Dhillon" data-date="2026-11-12T19:00:00">
-                    <div class="event-card" data-aos="fade-up">
-                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                    <div class="event-card cursor-pointer" data-aos="fade-up" onclick="openSeatModal('AP Dhillon - One Out Of One Tour', 'Amanora Mall Ground, Pune', '12 Nov 2026', '7:00 PM', 'AP Dhillon')">
+                        <div class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
                             <img src="https://www.baltana.com/files/wallpapers-27/AP-Dhillon-Background-Wallpaper-86503.jpg" alt="AP Dhillon">
                             <span class="event-badge">🎤 Singing Concert</span>
@@ -1289,10 +1306,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                 <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹2,499</h5></div>
-                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('AP Dhillon - One Out Of One Tour', 'Amanora Mall Ground, Pune', '12 Nov 2026', '7:00 PM', 'AP Dhillon')">Select Seats</button>
+                                <button class="btn btn-primary rounded-pill px-3 fw-bold" onclick="event.stopPropagation(); openSeatModal('AP Dhillon - One Out Of One Tour', 'Amanora Mall Ground, Pune', '12 Nov 2026', '7:00 PM', 'AP Dhillon')"><i class="fa-solid fa-chair me-1"></i>Book Seats</button>
                             </div>
                             <div class="mt-2 text-center">
-                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('AP Dhillon')">View Artist Profile &rarr;</a>
+                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="event.stopPropagation(); showArtist('AP Dhillon')">View Artist Profile &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -1300,8 +1317,8 @@
 
                 <!-- 2. Arijit Singh -->
                 <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2999" data-type="Outdoor" data-title="Arijit Singh" data-date="2026-12-24T18:00:00">
-                    <div class="event-card" data-aos="fade-up" data-aos-delay="100">
-                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                    <div class="event-card cursor-pointer" data-aos="fade-up" data-aos-delay="100" onclick="openSeatModal('Arijit Singh - Soulful Symphony', 'Pandit Farms, DP Road, Pune', '24 Dec 2026', '6:00 PM', 'Arijit Singh')">
+                        <div class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
                             <img src="https://wallpaperaccess.com/full/1280813.jpg" alt="Arijit Singh">
                             <span class="event-badge">🎤 Soulful Symphony</span>
@@ -1327,10 +1344,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                 <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹2,999</h5></div>
-                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Arijit Singh - Soulful Symphony', 'Pandit Farms, DP Road, Pune', '24 Dec 2026', '6:00 PM', 'Arijit Singh')">Select Seats</button>
+                                <button class="btn btn-primary rounded-pill px-3 fw-bold" onclick="event.stopPropagation(); openSeatModal('Arijit Singh - Soulful Symphony', 'Pandit Farms, DP Road, Pune', '24 Dec 2026', '6:00 PM', 'Arijit Singh')"><i class="fa-solid fa-chair me-1"></i>Book Seats</button>
                             </div>
                             <div class="mt-2 text-center">
-                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Arijit Singh')">View Artist Profile &rarr;</a>
+                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="event.stopPropagation(); showArtist('Arijit Singh')">View Artist Profile &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -1338,8 +1355,8 @@
 
                 <!-- 3. Anuv Jain -->
                 <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="1499" data-type="Indoor" data-title="Anuv Jain" data-date="2026-12-18T18:30:00">
-                    <div class="event-card" data-aos="fade-up" data-aos-delay="200">
-                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                    <div class="event-card cursor-pointer" data-aos="fade-up" data-aos-delay="200" onclick="openSeatModal('Anuv Jain - Live in Concert', 'JW Marriott Ballroom, Pune', '18 Dec 2026', '6:30 PM', 'Anuv Jain')">
+                        <div class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
                             <img src="https://rollingstoneindia.com/wp-content/uploads/2024/03/Anuv-Jain-2-960x640.jpeg" alt="Anuv Jain">
                             <span class="event-badge">🎸 Indie Acoustic</span>
@@ -1365,10 +1382,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                 <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹1,499</h5></div>
-                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Anuv Jain - Live in Concert', 'JW Marriott Ballroom, Pune', '18 Dec 2026', '6:30 PM', 'Anuv Jain')">Select Seats</button>
+                                <button class="btn btn-primary rounded-pill px-3 fw-bold" onclick="event.stopPropagation(); openSeatModal('Anuv Jain - Live in Concert', 'JW Marriott Ballroom, Pune', '18 Dec 2026', '6:30 PM', 'Anuv Jain')"><i class="fa-solid fa-chair me-1"></i>Book Seats</button>
                             </div>
                             <div class="mt-2 text-center">
-                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Anuv Jain')">View Artist Profile &rarr;</a>
+                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="event.stopPropagation(); showArtist('Anuv Jain')">View Artist Profile &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -1376,8 +1393,8 @@
 
                 <!-- 4. Nora Fatehi -->
                 <div class="col-md-6 col-lg-4 event-item" data-category="dance" data-price="1999" data-type="Outdoor" data-title="Nora Fatehi" data-date="2026-11-28T18:30:00">
-                    <div class="event-card" data-aos="fade-up">
-                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                    <div class="event-card cursor-pointer" data-aos="fade-up" onclick="openSeatModal('Nora Fatehi - Dance Fever Live', 'Phoenix Marketcity Courtyard, Pune', '28 Nov 2026', '6:30 PM', 'Nora Fatehi')">
+                        <div class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
                             <img src="https://4kwallpapers.com/images/wallpapers/nora-fatehi-5120x2880-11113.jpg" alt="Nora Fatehi">
                             <span class="event-badge">💃 Bollywood Dance Live</span>
@@ -1403,10 +1420,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                 <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹1,999</h5></div>
-                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Nora Fatehi - Dance Fever Live', 'Phoenix Marketcity Courtyard, Pune', '28 Nov 2026', '6:30 PM', 'Nora Fatehi')">Select Seats</button>
+                                <button class="btn btn-primary rounded-pill px-3 fw-bold" onclick="event.stopPropagation(); openSeatModal('Nora Fatehi - Dance Fever Live', 'Phoenix Marketcity Courtyard, Pune', '28 Nov 2026', '6:30 PM', 'Nora Fatehi')"><i class="fa-solid fa-chair me-1"></i>Book Seats</button>
                             </div>
                             <div class="mt-2 text-center">
-                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Nora Fatehi')">View Artist Profile &rarr;</a>
+                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="event.stopPropagation(); showArtist('Nora Fatehi')">View Artist Profile &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -1414,8 +1431,8 @@
 
                 <!-- 5. Bharatnatyam Group -->
                 <div class="col-md-6 col-lg-4 event-item" data-category="dance" data-price="699" data-type="Indoor" data-title="Bharatnatyam" data-date="2026-12-10T17:30:00">
-                    <div class="event-card" data-aos="fade-up" data-aos-delay="100">
-                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                    <div class="event-card cursor-pointer" data-aos="fade-up" data-aos-delay="100" onclick="openSeatModal('Bharatnatyam - Classical Dance Night', 'Grand Orchid Hall, Viman Nagar, Pune', '10 Dec 2026', '5:30 PM', 'Bharatnatyam Group')">
+                        <div class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
                             <img src="https://thumbs.dreamstime.com/b/group-classical-odissi-dancers-performing-odissi-dance-stage-konark-temple-odisha-india-odissi-dance-also-known-as-155047464.jpg" alt="Bharatnatyam Classical Dance">
                             <span class="event-badge">🩰 Classical Dance</span>
@@ -1441,10 +1458,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                 <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹699</h5></div>
-                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Bharatnatyam - Classical Dance Night', 'Grand Orchid Hall, Viman Nagar, Pune', '10 Dec 2026', '5:30 PM', 'Bharatnatyam Group')">Select Seats</button>
+                                <button class="btn btn-primary rounded-pill px-3 fw-bold" onclick="event.stopPropagation(); openSeatModal('Bharatnatyam - Classical Dance Night', 'Grand Orchid Hall, Viman Nagar, Pune', '10 Dec 2026', '5:30 PM', 'Bharatnatyam Group')"><i class="fa-solid fa-chair me-1"></i>Book Seats</button>
                             </div>
                             <div class="mt-2 text-center">
-                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Bharatnatyam Group')">View Artist Profile &rarr;</a>
+                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="event.stopPropagation(); showArtist('Bharatnatyam Group')">View Artist Profile &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -1452,8 +1469,8 @@
 
                 <!-- 6. KR$NA Rap Concert Show (Link accurately fixed to KR$NA) -->
                 <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="1199" data-type="Indoor" data-title="KR$NA Rap Concert" data-date="2026-12-15T18:00:00">
-                    <div class="event-card" data-aos="fade-up" data-aos-delay="200">
-                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                    <div class="event-card cursor-pointer" data-aos="fade-up" data-aos-delay="200" onclick="openSeatModal('KR$NA Rap Concert Show', 'JW Marriott Ballroom, SB Road, Pune', '15 Dec 2026', '6:00 PM', 'KR$NA')">
+                        <div class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
                             <img src="https://images.indianexpress.com/2024/02/indian-rapper.jpg" alt="KR$NA Rap Concert">
                             <span class="event-badge">🎤 Hip-Hop Rap Showcase</span>
@@ -1479,10 +1496,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                 <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹1,199</h5></div>
-                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('KR$NA Rap Concert Show', 'JW Marriott Ballroom, SB Road, Pune', '15 Dec 2026', '6:00 PM', 'KR$NA')">Select Seats</button>
+                                <button class="btn btn-primary rounded-pill px-3 fw-bold" onclick="event.stopPropagation(); openSeatModal('KR$NA Rap Concert Show', 'JW Marriott Ballroom, SB Road, Pune', '15 Dec 2026', '6:00 PM', 'KR$NA')"><i class="fa-solid fa-chair me-1"></i>Book Seats</button>
                             </div>
                             <div class="mt-2 text-center">
-                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('KR$NA')">View Artist Profile &rarr;</a>
+                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="event.stopPropagation(); showArtist('KR$NA')">View Artist Profile &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -1490,8 +1507,8 @@
 
                 <!-- 7. Karan Aujla -->
                 <div class="col-md-6 col-lg-4 event-item" data-category="singing" data-price="2199" data-type="Outdoor" data-title="Karan Aujla" data-date="2026-11-20T19:30:00">
-                    <div class="event-card" data-aos="fade-up">
-                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                    <div class="event-card cursor-pointer" data-aos="fade-up" onclick="openSeatModal('Karan Aujla - Making Memories Tour', 'Roots9 Arena, Baner, Pune', '20 Nov 2026', '7:30 PM', 'Karan Aujla')">
+                        <div class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
                             <img src="https://www.rollingstone.com/wp-content/uploads/2025/05/Karan-Aujla-exclusive.jpg?crop=120px%2C0px%2C1680px%2C946px&resize=1600%2C900" alt="Karan Aujla">
                             <span class="event-badge">🎤 Punjabi Hip-Hop</span>
@@ -1517,10 +1534,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                 <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹2,199</h5></div>
-                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Karan Aujla - Making Memories Tour', 'Roots9 Arena, Baner, Pune', '20 Nov 2026', '7:30 PM', 'Karan Aujla')">Select Seats</button>
+                                <button class="btn btn-primary rounded-pill px-3 fw-bold" onclick="event.stopPropagation(); openSeatModal('Karan Aujla - Making Memories Tour', 'Roots9 Arena, Baner, Pune', '20 Nov 2026', '7:30 PM', 'Karan Aujla')"><i class="fa-solid fa-chair me-1"></i>Book Seats</button>
                             </div>
                             <div class="mt-2 text-center">
-                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Karan Aujla')">View Artist Profile &rarr;</a>
+                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="event.stopPropagation(); showArtist('Karan Aujla')">View Artist Profile &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -1528,8 +1545,8 @@
 
                 <!-- 8. Pranit More -->
                 <div class="col-md-6 col-lg-4 event-item" data-category="comedy" data-price="599" data-type="Indoor" data-title="Pranit More" data-date="2026-12-08T20:00:00">
-                    <div class="event-card" data-aos="fade-up" data-aos-delay="100">
-                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                    <div class="event-card cursor-pointer" data-aos="fade-up" data-aos-delay="100" onclick="openSeatModal('Pranit More Comedy Live', 'Roots9 Arena, Baner, Pune', '08 Dec 2026', '8:00 PM', 'Pranit More')">
+                        <div class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
                             <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=80" alt="Pranit More Standup Comedy">
                             <span class="event-badge">😂 Standup Comedy</span>
@@ -1555,10 +1572,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                 <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹599</h5></div>
-                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Pranit More Comedy Live', 'Roots9 Arena, Baner, Pune', '08 Dec 2026', '8:00 PM', 'Pranit More')">Select Seats</button>
+                                <button class="btn btn-primary rounded-pill px-3 fw-bold" onclick="event.stopPropagation(); openSeatModal('Pranit More Comedy Live', 'Roots9 Arena, Baner, Pune', '08 Dec 2026', '8:00 PM', 'Pranit More')"><i class="fa-solid fa-chair me-1"></i>Book Seats</button>
                             </div>
                             <div class="mt-2 text-center">
-                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Pranit More')">View Artist Profile &rarr;</a>
+                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="event.stopPropagation(); showArtist('Pranit More')">View Artist Profile &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -1566,8 +1583,8 @@
 
                 <!-- 9. Samay Raina -->
                 <div class="col-md-6 col-lg-4 event-item" data-category="comedy" data-price="799" data-type="Indoor" data-title="Samay Raina" data-date="2026-12-05T20:00:00">
-                    <div class="event-card" data-aos="fade-up" data-aos-delay="200">
-                        <div class="wishlist-btn" onclick="toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
+                    <div class="event-card cursor-pointer" data-aos="fade-up" data-aos-delay="200" onclick="openSeatModal('Samay Raina - Unfiltered Comedy', 'JW Marriott Auditorium, Pune', '05 Dec 2026', '8:00 PM', 'Samay Raina')">
+                        <div class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(this)"><i class="fa-solid fa-heart"></i></div>
                         <div class="event-img-wrap">
                             <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=600&q=80" alt="Samay Raina Unfiltered Comedy">
                             <span class="event-badge">😂 Unfiltered Special</span>
@@ -1593,10 +1610,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                 <div><span class="text-muted small">Starts from</span><h5 class="fw-bold text-primary mb-0">₹799</h5></div>
-                                <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openSeatModal('Samay Raina - Unfiltered Comedy', 'JW Marriott Auditorium, Pune', '05 Dec 2026', '8:00 PM', 'Samay Raina')">Select Seats</button>
+                                <button class="btn btn-primary rounded-pill px-3 fw-bold" onclick="event.stopPropagation(); openSeatModal('Samay Raina - Unfiltered Comedy', 'JW Marriott Auditorium, Pune', '05 Dec 2026', '8:00 PM', 'Samay Raina')"><i class="fa-solid fa-chair me-1"></i>Book Seats</button>
                             </div>
                             <div class="mt-2 text-center">
-                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="showArtist('Samay Raina')">View Artist Profile &rarr;</a>
+                                <a href="#artist-details" class="small text-decoration-none text-primary fw-semibold" onclick="event.stopPropagation(); showArtist('Samay Raina')">View Artist Profile &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -3243,89 +3260,35 @@
             updateEventCardCapacities();
         }
 
-        // Show-Specific Seat Occupancy Profiles (Reflects realistic popularity & demand)
+                // Show-Specific Seat Occupancy Profiles (Reflects realistic popularity & demand)
         const SHOW_SEAT_PROFILES = {
             'Arijit Singh': {
-                occupied: [
-                    'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A8', 'A9', 'A10',
-                    'B1', 'B2', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10',
-                    'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C10',
-                    'D1', 'D2', 'D3', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10',
-                    'E1', 'E2', 'E3', 'E4', 'E6', 'E7', 'E8', 'E9', 'E10'
-                ] // 44 pre-booked -> 6 seats remaining! (88% Sold)
-            },
+                occupied: ['A1', 'A5', 'A9', 'B2', 'B6', 'B10', 'C3', 'C7', 'D1', 'D4', 'D8', 'E2', 'E5', 'E8', 'E10', 'C1']
+            }, // 16 pre-booked -> 34 remaining (32% booked, high demand)
             'Karan Aujla': {
-                occupied: [
-                    'A1', 'A2', 'A3', 'A5', 'A6', 'A7', 'A8', 'A10',
-                    'B1', 'B3', 'B4', 'B5', 'B6', 'B8', 'B9', 'B10',
-                    'C2', 'C3', 'C4', 'C6', 'C7', 'C9', 'C10',
-                    'D1', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D10',
-                    'E1', 'E2', 'E4', 'E5', 'E6', 'E8', 'E9', 'E10'
-                ] // 39 pre-booked -> 11 seats remaining! (78% Sold)
-            },
+                occupied: ['A2', 'A6', 'A10', 'B3', 'B7', 'C2', 'C6', 'C9', 'D2', 'D5', 'D9', 'E1', 'E6', 'E10']
+            }, // 14 pre-booked -> 36 remaining
             'AP Dhillon': {
-                occupied: [
-                    'A1', 'A3', 'A4', 'A6', 'A8', 'A9', 'A10',
-                    'B1', 'B2', 'B4', 'B5', 'B6', 'B7', 'B9', 'B10',
-                    'C1', 'C3', 'C4', 'C5', 'C7', 'C8', 'C10',
-                    'D2', 'D3', 'D4', 'D6', 'D7', 'D9', 'D10',
-                    'E1', 'E3', 'E5', 'E6', 'E7', 'E8', 'E10'
-                ] // 36 pre-booked -> 14 seats remaining! (72% Sold)
-            },
+                occupied: ['A3', 'A8', 'B1', 'B5', 'B9', 'C4', 'C8', 'D3', 'D7', 'E3', 'E7', 'E9']
+            }, // 12 pre-booked -> 38 remaining
             'Samay Raina': {
-                occupied: [
-                    'A2', 'A3', 'A4', 'A5', 'A7', 'A8', 'A9',
-                    'B2', 'B3', 'B4', 'B6', 'B7', 'B8', 'B10',
-                    'C1', 'C2', 'C4', 'C5', 'C6', 'C8', 'C9',
-                    'D1', 'D3', 'D5', 'D6', 'D8', 'D9',
-                    'E2', 'E4', 'E6', 'E7', 'E9', 'E10'
-                ] // 33 pre-booked -> 17 seats remaining! (66% Sold)
-            },
+                occupied: ['A4', 'B2', 'B8', 'C1', 'C5', 'D1', 'D6', 'D10', 'E2', 'E8', 'C10']
+            }, // 11 pre-booked -> 39 remaining
             'KR$NA': {
-                occupied: [
-                    'A1', 'A3', 'A5', 'A7', 'A8', 'A10',
-                    'B2', 'B3', 'B4', 'B6', 'B8', 'B9',
-                    'C1', 'C3', 'C5', 'C6', 'C8', 'C10',
-                    'D1', 'D2', 'D4', 'D6', 'D7', 'D9', 'D10',
-                    'E2', 'E3', 'E5', 'E7', 'E8', 'E10'
-                ] // 31 pre-booked -> 19 seats remaining! (62% Sold)
-            },
+                occupied: ['A2', 'B4', 'B9', 'C3', 'C7', 'D4', 'D8', 'E1', 'E5', 'E9']
+            }, // 10 pre-booked -> 40 remaining
             'Nora Fatehi': {
-                occupied: [
-                    'A2', 'A4', 'A6', 'A7', 'A9',
-                    'B1', 'B3', 'B5', 'B7', 'B8', 'B10',
-                    'C2', 'C4', 'C6', 'C7', 'C9', 'C10',
-                    'D1', 'D3', 'D5', 'D7', 'D8', 'D10',
-                    'E2', 'E4', 'E5', 'E7', 'E8', 'E9'
-                ] // 29 pre-booked -> 21 seats remaining! (58% Sold)
-            },
+                occupied: ['A3', 'B3', 'B8', 'C2', 'C8', 'D2', 'D7', 'E4', 'E7']
+            }, // 9 pre-booked -> 41 remaining
             'Anuv Jain': {
-                occupied: [
-                    'A1', 'A3', 'A5', 'A8', 'A10',
-                    'B2', 'B4', 'B6', 'B8', 'B9',
-                    'C1', 'C3', 'C5', 'C7', 'C9',
-                    'D2', 'D4', 'D6', 'D8', 'D10',
-                    'E1', 'E3', 'E5', 'E7', 'E9'
-                ] // 25 pre-booked -> 25 seats remaining! (50% Sold)
-            },
+                occupied: ['A5', 'B2', 'C4', 'C9', 'D5', 'D9', 'E3', 'E8']
+            }, // 8 pre-booked -> 42 remaining
             'Pranit More': {
-                occupied: [
-                    'A2', 'A5', 'A8', 'A9',
-                    'B1', 'B4', 'B7', 'B10',
-                    'C3', 'C6', 'C8', 'C9',
-                    'D2', 'D5', 'D7', 'D9',
-                    'E1', 'E4', 'E6', 'E8', 'E10'
-                ] // 21 pre-booked -> 29 seats remaining! (42% Sold)
-            },
+                occupied: ['A1', 'B6', 'C5', 'D3', 'D8', 'E2', 'E6']
+            }, // 7 pre-booked -> 43 remaining
             'Bharatnatyam': {
-                occupied: [
-                    'A3', 'A7', 'A10',
-                    'B2', 'B5', 'B8',
-                    'C1', 'C4', 'C7', 'C10',
-                    'D3', 'D6', 'D9',
-                    'E2', 'E5', 'E8'
-                ] // 16 pre-booked -> 34 seats remaining! (32% Sold)
-            }
+                occupied: ['A7', 'B4', 'C6', 'D5', 'E1', 'E7']
+            } // 6 pre-booked -> 44 remaining
         };
 
         function getShowProfileKey(showName) {
@@ -3356,10 +3319,10 @@
                 
                 const availSpan = card.querySelector('.small.text-muted.mb-1 span:last-child');
                 if (availSpan) {
-                    let tagHtml = '';
-                    if (remaining <= 8) {
+                                        let tagHtml = '';
+                    if (remaining <= 35) {
                         tagHtml = ` <span class="badge bg-danger ms-1">🔥 Selling Fast!</span>`;
-                    } else if (remaining <= 15) {
+                    } else if (remaining <= 38) {
                         tagHtml = ` <span class="badge bg-warning text-dark ms-1">⚡ High Demand</span>`;
                     }
                     availSpan.innerHTML = `<strong>${remaining}</strong> / ${baseCap} Seats Left${tagHtml}`;
@@ -3397,6 +3360,30 @@
             return selectedSeats.reduce((acc, seatId) => {
                 return acc + getSeatTierInfo(seatId).price;
             }, 0);
+        }
+
+        
+        // Category Tab Filter Helper
+        function setCategoryFilter(category, btnElement) {
+            activeCategoryFilter = category;
+            const pills = document.querySelectorAll('#eventTab .nav-link');
+            pills.forEach(p => p.classList.remove('active'));
+            if (btnElement) btnElement.classList.add('active');
+            filterEvents();
+        }
+
+        // Occupied Seat Click Interactive Feedback
+        function handleOccupiedSeatClick(elem, seatNo, tierInfo) {
+            elem.classList.remove('seat-shake');
+            void elem.offsetWidth;
+            elem.classList.add('seat-shake');
+            setTimeout(() => elem.classList.remove('seat-shake'), 450);
+
+            const banner = document.getElementById('tierStatusBanner');
+            if (banner) {
+                banner.className = 'alert alert-danger border border-danger shadow-sm py-2 px-3 small text-center mb-3 rounded-3 fw-bold';
+                banner.innerHTML = `<i class="fa-solid fa-ban text-danger me-1"></i> Seat <strong>${seatNo}</strong> (${tierInfo.name} Tier) is already reserved for this show! Please click any available colored seat.`;
+            }
         }
 
         function openSeatModal(eventTitle, venue, date, time, artistName) {
@@ -3481,8 +3468,16 @@
                     seat.setAttribute('data-price', tierInfo.price);
                     seat.title = `Seat ${seatId} • ${tierInfo.icon} ${tierInfo.name} (₹${tierInfo.price.toLocaleString('en-IN')}) • ${isOccupied ? 'Occupied / Booked' : 'Available'}`;
 
-                    if (!isOccupied) {
-                        seat.onclick = () => toggleSeat(seat, seatId);
+                                        if (!isOccupied) {
+                        seat.onclick = (e) => {
+                            e.stopPropagation();
+                            toggleSeat(seat, seatId);
+                        };
+                    } else {
+                        seat.onclick = (e) => {
+                            e.stopPropagation();
+                            handleOccupiedSeatClick(seat, seatId, tierInfo);
+                        };
                     }
 
                     seatsCol.appendChild(seat);
@@ -3505,7 +3500,7 @@
                 grid.appendChild(rowWrap);
             });
 
-            const modal = new bootstrap.Modal(document.getElementById('seatModal'));
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('seatModal'));
             modal.show();
         }
 
