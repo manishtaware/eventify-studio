@@ -3243,25 +3243,136 @@
             updateEventCardCapacities();
         }
 
-        // Dynamic Event Card Capacity Badges
+        // Show-Specific Seat Occupancy Profiles (Reflects realistic popularity & demand)
+        const SHOW_SEAT_PROFILES = {
+            'Arijit Singh': {
+                occupied: [
+                    'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A8', 'A9', 'A10',
+                    'B1', 'B2', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10',
+                    'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C10',
+                    'D1', 'D2', 'D3', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10',
+                    'E1', 'E2', 'E3', 'E4', 'E6', 'E7', 'E8', 'E9', 'E10'
+                ] // 44 pre-booked -> 6 seats remaining! (88% Sold)
+            },
+            'Karan Aujla': {
+                occupied: [
+                    'A1', 'A2', 'A3', 'A5', 'A6', 'A7', 'A8', 'A10',
+                    'B1', 'B3', 'B4', 'B5', 'B6', 'B8', 'B9', 'B10',
+                    'C2', 'C3', 'C4', 'C6', 'C7', 'C9', 'C10',
+                    'D1', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D10',
+                    'E1', 'E2', 'E4', 'E5', 'E6', 'E8', 'E9', 'E10'
+                ] // 39 pre-booked -> 11 seats remaining! (78% Sold)
+            },
+            'AP Dhillon': {
+                occupied: [
+                    'A1', 'A3', 'A4', 'A6', 'A8', 'A9', 'A10',
+                    'B1', 'B2', 'B4', 'B5', 'B6', 'B7', 'B9', 'B10',
+                    'C1', 'C3', 'C4', 'C5', 'C7', 'C8', 'C10',
+                    'D2', 'D3', 'D4', 'D6', 'D7', 'D9', 'D10',
+                    'E1', 'E3', 'E5', 'E6', 'E7', 'E8', 'E10'
+                ] // 36 pre-booked -> 14 seats remaining! (72% Sold)
+            },
+            'Samay Raina': {
+                occupied: [
+                    'A2', 'A3', 'A4', 'A5', 'A7', 'A8', 'A9',
+                    'B2', 'B3', 'B4', 'B6', 'B7', 'B8', 'B10',
+                    'C1', 'C2', 'C4', 'C5', 'C6', 'C8', 'C9',
+                    'D1', 'D3', 'D5', 'D6', 'D8', 'D9',
+                    'E2', 'E4', 'E6', 'E7', 'E9', 'E10'
+                ] // 33 pre-booked -> 17 seats remaining! (66% Sold)
+            },
+            'KR$NA': {
+                occupied: [
+                    'A1', 'A3', 'A5', 'A7', 'A8', 'A10',
+                    'B2', 'B3', 'B4', 'B6', 'B8', 'B9',
+                    'C1', 'C3', 'C5', 'C6', 'C8', 'C10',
+                    'D1', 'D2', 'D4', 'D6', 'D7', 'D9', 'D10',
+                    'E2', 'E3', 'E5', 'E7', 'E8', 'E10'
+                ] // 31 pre-booked -> 19 seats remaining! (62% Sold)
+            },
+            'Nora Fatehi': {
+                occupied: [
+                    'A2', 'A4', 'A6', 'A7', 'A9',
+                    'B1', 'B3', 'B5', 'B7', 'B8', 'B10',
+                    'C2', 'C4', 'C6', 'C7', 'C9', 'C10',
+                    'D1', 'D3', 'D5', 'D7', 'D8', 'D10',
+                    'E2', 'E4', 'E5', 'E7', 'E8', 'E9'
+                ] // 29 pre-booked -> 21 seats remaining! (58% Sold)
+            },
+            'Anuv Jain': {
+                occupied: [
+                    'A1', 'A3', 'A5', 'A8', 'A10',
+                    'B2', 'B4', 'B6', 'B8', 'B9',
+                    'C1', 'C3', 'C5', 'C7', 'C9',
+                    'D2', 'D4', 'D6', 'D8', 'D10',
+                    'E1', 'E3', 'E5', 'E7', 'E9'
+                ] // 25 pre-booked -> 25 seats remaining! (50% Sold)
+            },
+            'Pranit More': {
+                occupied: [
+                    'A2', 'A5', 'A8', 'A9',
+                    'B1', 'B4', 'B7', 'B10',
+                    'C3', 'C6', 'C8', 'C9',
+                    'D2', 'D5', 'D7', 'D9',
+                    'E1', 'E4', 'E6', 'E8', 'E10'
+                ] // 21 pre-booked -> 29 seats remaining! (42% Sold)
+            },
+            'Bharatnatyam': {
+                occupied: [
+                    'A3', 'A7', 'A10',
+                    'B2', 'B5', 'B8',
+                    'C1', 'C4', 'C7', 'C10',
+                    'D3', 'D6', 'D9',
+                    'E2', 'E5', 'E8'
+                ] // 16 pre-booked -> 34 seats remaining! (32% Sold)
+            }
+        };
+
+        function getShowProfileKey(showName) {
+            if (!showName) return 'AP Dhillon';
+            const lower = showName.toLowerCase();
+            const keys = Object.keys(SHOW_SEAT_PROFILES);
+            for (let i = 0; i < keys.length; i++) {
+                if (lower.includes(keys[i].toLowerCase())) {
+                    return keys[i];
+                }
+            }
+            return keys[0];
+        }
+
+        // Dynamic Event Card Capacity Badges (Accurate & Unique Per Show)
         function updateEventCardCapacities() {
             const cards = document.querySelectorAll('.event-item');
             cards.forEach(card => {
                 const title = card.getAttribute('data-title') || '';
-                const booked = getShowBookedSeats(title).length;
+                const pKey = getShowProfileKey(title);
+                const profile = SHOW_SEAT_PROFILES[pKey];
+                const baseOccupied = profile ? profile.occupied : ['A3', 'B4', 'C5', 'D6', 'E7'];
+                const dynamicBooked = getShowBookedSeats(title).concat(getShowBookedSeats(pKey));
+                const totalBooked = [...new Set([...baseOccupied, ...dynamicBooked])].length;
                 const baseCap = 50;
-                const basePreOccupied = 10;
-                const totalBooked = basePreOccupied + booked;
                 const remaining = Math.max(0, baseCap - totalBooked);
+                const pct = Math.min(100, Math.round((totalBooked / baseCap) * 100));
                 
                 const availSpan = card.querySelector('.small.text-muted.mb-1 span:last-child');
                 if (availSpan) {
-                    availSpan.innerHTML = `<strong>${remaining}</strong> / ${baseCap} Seats Left`;
+                    let tagHtml = '';
+                    if (remaining <= 8) {
+                        tagHtml = ` <span class="badge bg-danger ms-1">🔥 Selling Fast!</span>`;
+                    } else if (remaining <= 15) {
+                        tagHtml = ` <span class="badge bg-warning text-dark ms-1">⚡ High Demand</span>`;
+                    }
+                    availSpan.innerHTML = `<strong>${remaining}</strong> / ${baseCap} Seats Left${tagHtml}`;
                 }
+
                 const bar = card.querySelector('.progress-bar');
                 if (bar) {
-                    const pct = Math.round((totalBooked / baseCap) * 100);
                     bar.style.width = pct + '%';
+                    bar.className = 'progress-bar';
+                    if (pct >= 80) bar.classList.add('bg-danger');
+                    else if (pct >= 65) bar.classList.add('bg-warning');
+                    else if (pct >= 45) bar.classList.add('bg-info');
+                    else bar.classList.add('bg-success');
                 }
             });
         }
@@ -3334,8 +3445,10 @@
             if (sumText) sumText.innerText = 'None selected';
 
             const rows = ['A', 'B', 'C', 'D', 'E'];
-            const defaultOccupied = ['A3', 'A8', 'B4', 'B9', 'C2', 'C7', 'D5', 'E1', 'E6', 'E10'];
-            const dynamicOccupied = getShowBookedSeats(currentArtistName).concat(getShowBookedSeats(currentShowName));
+            const pKey = getShowProfileKey(currentArtistName || currentShowName);
+            const profile = SHOW_SEAT_PROFILES[pKey];
+            const defaultOccupied = profile ? profile.occupied : ['A3', 'A8', 'B4', 'B9', 'C2', 'C7', 'D5', 'E1', 'E6', 'E10'];
+            const dynamicOccupied = getShowBookedSeats(currentArtistName).concat(getShowBookedSeats(currentShowName)).concat(getShowBookedSeats(pKey));
             const occupiedSeats = [...new Set([...defaultOccupied, ...dynamicOccupied])];
 
             rows.forEach(r => {
