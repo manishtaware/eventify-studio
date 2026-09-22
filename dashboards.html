@@ -335,6 +335,60 @@
             filter: none !important;
         }
         
+        
+        /* User Profile Avatar Badge & Auth Styling */
+        .avatar-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c5ce7, #ff7675);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+        }
+        .auth-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            color: #f8fafc;
+        }
+        .auth-input-group .input-group-text {
+            background: rgba(30, 41, 59, 0.85);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #94a3b8;
+        }
+        .auth-input-group .form-control {
+            background: rgba(15, 23, 42, 0.9);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+        .auth-input-group .form-control:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.25);
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+        }
+        .auth-tab-pill {
+            border-radius: 50px;
+            padding: 8px 24px;
+            font-weight: 700;
+            color: #94a3b8;
+            border: none;
+            background: transparent;
+            transition: all 0.25s ease;
+        }
+        .auth-tab-pill.active {
+            background: #f59e0b;
+            color: #0f172a;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+        }
+
         /* Interactive Card & Seat Animations */
         .cursor-pointer { cursor: pointer !important; }
         .event-card { cursor: pointer; }
@@ -669,7 +723,10 @@
                     <li class="nav-item"><a class="nav-link text-warning active" href="dashboards.html">Dashboards</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="contact.html">Contact</a></li>
                 </ul>
-                <button class="btn btn-outline-light rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#referralModal"><i class="fa-solid fa-gift text-warning me-1"></i>Earn ₹200</button>
+                <button class="btn btn-outline-light rounded-pill px-3 fw-bold me-2" data-bs-toggle="modal" data-bs-target="#referralModal"><i class="fa-solid fa-gift text-warning me-1"></i>Earn ₹200</button>
+                <div id="navbarAuthContainer" class="d-inline-block">
+                    <a href="login.html" class="btn btn-warning rounded-pill px-3 fw-bold text-dark"><i class="fa-solid fa-right-to-bracket me-1"></i>Login / Sign Up</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -2968,6 +3025,175 @@
             parseUrlSearchParams();
         });
 
+        
+        // ==================== EVENTIFY AUTH & SESSION ENGINE ====================
+        const AUTH_USERS_KEY = 'eventify_users';
+        const AUTH_SESSION_KEY = 'eventify_auth_session';
+
+        const DEFAULT_USERS = [
+            {
+                id: 'usr_9876543210',
+                name: 'Rahul Sharma',
+                phone: '9876543210',
+                password: 'Password@123',
+                createdAt: '2026-09-01T10:00:00Z'
+            },
+            {
+                id: 'usr_9123456780',
+                name: 'Priya Patel',
+                phone: '9123456780',
+                password: 'Eventify@2026',
+                createdAt: '2026-09-05T12:00:00Z'
+            }
+        ];
+
+        function initAuth() {
+            if (!localStorage.getItem(AUTH_USERS_KEY)) {
+                localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(DEFAULT_USERS));
+            }
+        }
+
+        function getAllUsers() {
+            initAuth();
+            try {
+                return JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || DEFAULT_USERS;
+            } catch (e) {
+                return DEFAULT_USERS;
+            }
+        }
+
+        function getCurrentUser() {
+            try {
+                const session = JSON.parse(localStorage.getItem(AUTH_SESSION_KEY));
+                if (session && session.isLoggedIn && session.user) {
+                    return session.user;
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        function loginUser(phone, password, remember = true) {
+            initAuth();
+            const cleanPhone = String(phone).replace(/\D/g, '').slice(-10);
+            const users = getAllUsers();
+            const matched = users.find(u => u.phone === cleanPhone);
+
+            if (!matched) {
+                return { success: false, message: 'No account found with phone +91 ' + cleanPhone + '. Please create an account!' };
+            }
+            if (matched.password !== password) {
+                return { success: false, message: 'Incorrect password for +91 ' + cleanPhone + '. Please try again!' };
+            }
+
+            const session = {
+                isLoggedIn: true,
+                user: {
+                    id: matched.id,
+                    name: matched.name,
+                    phone: matched.phone
+                },
+                loginTimestamp: Date.now(),
+                remember: remember
+            };
+            localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+            return { success: true, user: session.user };
+        }
+
+        function registerUser(name, phone, password) {
+            initAuth();
+            const cleanPhone = String(phone).replace(/\D/g, '').slice(-10);
+            if (!name || name.trim().length < 2) {
+                return { success: false, message: 'Please enter your full name (minimum 2 characters).' };
+            }
+            if (cleanPhone.length !== 10) {
+                return { success: false, message: 'Please enter a valid 10-digit mobile phone number.' };
+            }
+            if (!password || password.length < 6) {
+                return { success: false, message: 'Password must be at least 6 characters long.' };
+            }
+
+            const users = getAllUsers();
+            if (users.some(u => u.phone === cleanPhone)) {
+                return { success: false, message: 'An account with phone +91 ' + cleanPhone + ' already exists! Please Sign In instead.' };
+            }
+
+            const newUser = {
+                id: 'usr_' + cleanPhone,
+                name: name.trim(),
+                phone: cleanPhone,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+            users.push(newUser);
+            localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+
+            const session = {
+                isLoggedIn: true,
+                user: {
+                    id: newUser.id,
+                    name: newUser.name,
+                    phone: newUser.phone
+                },
+                loginTimestamp: Date.now(),
+                remember: true
+            };
+            localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+            return { success: true, user: session.user };
+        }
+
+        function logoutUser() {
+            localStorage.removeItem(AUTH_SESSION_KEY);
+            updateNavbarAuth();
+            if (window.location.pathname.endsWith('dashboards.html')) {
+                window.location.href = 'index.html';
+            } else {
+                window.location.reload();
+            }
+        }
+
+        function updateNavbarAuth() {
+            const container = document.getElementById('navbarAuthContainer');
+            if (!container) return;
+            const user = getCurrentUser();
+
+            if (user) {
+                const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+                const firstName = user.name.split(' ')[0] || user.name;
+                container.innerHTML = `
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-dark border-secondary rounded-pill px-3 py-1 fw-bold text-white dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="avatar-badge me-2">${initials}</span>
+                            <span class="d-none d-sm-inline me-1">Hi, ${firstName}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-secondary rounded-3">
+                            <li class="dropdown-header text-muted small pb-1">
+                                Signed in with phone:<br>
+                                <strong class="text-white"><i class="fa-solid fa-phone me-1 text-warning"></i>+91 ${user.phone}</strong>
+                            </li>
+                            <li><hr class="dropdown-divider border-secondary my-1"></li>
+                            <li><a class="dropdown-item py-2" href="dashboards.html"><i class="fa-solid fa-ticket text-primary me-2"></i>My Bookings & Passes</a></li>
+                            <li><a class="dropdown-item py-2" href="events.html"><i class="fa-solid fa-star text-warning me-2"></i>Concerts & Shows</a></li>
+                            <li><a class="dropdown-item py-2" href="venues.html"><i class="fa-solid fa-building text-info me-2"></i>Explore Venues</a></li>
+                            <li><hr class="dropdown-divider border-secondary my-1"></li>
+                            <li><button class="dropdown-item py-2 text-danger fw-bold" onclick="logoutUser()"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sign Out</button></li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <a href="login.html" class="btn btn-warning rounded-pill px-3 fw-bold text-dark"><i class="fa-solid fa-right-to-bracket me-1"></i>Login / Sign Up</a>
+                `;
+            }
+        }
+
+        // Auto-initialize auth & navbar state immediately and on DOMContentLoaded
+        initAuth();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateNavbarAuth);
+        } else {
+            updateNavbarAuth();
+        }
+
         // Sticky Navbar scroll listener
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('mainNav');
@@ -3693,6 +3919,14 @@
             // Switch steps inside modal
             document.getElementById('seatSelectStep').classList.add('d-none');
             document.getElementById('seatCheckoutStep').classList.remove('d-none');
+            // Auto-fill logged-in attendee profile
+            const activeUser = getCurrentUser();
+            if (activeUser) {
+                const nameInp = document.getElementById('attName');
+                const phoneInp = document.getElementById('attPhone');
+                if (nameInp && !nameInp.value) nameInp.value = activeUser.name;
+                if (phoneInp && !phoneInp.value) phoneInp.value = activeUser.phone;
+            }
             document.getElementById('seatSuccessStep').classList.add('d-none');
         }
 

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Eventify Studio</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- AOS Animation Library CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #ff7675;
+            --dark-color: #0f172a;
+            --warning-color: #f59e0b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(15, 23, 42, 0.90), rgba(15, 23, 42, 0.90)), 
+                        url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1920&q=80') fixed center/cover no-repeat;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Cursor Glow Effect */
+        #cursor-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(108, 92, 231, 0.50) 0%, rgba(162, 155, 254, 0.25) 45%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: transform 0.08s ease-out, opacity 0.3s ease;
+            mix-blend-mode: screen;
+        }
+
+        .navbar-custom {
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 15px 50px 15px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(30, 41, 59, 0.82);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            color: #f8fafc;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; height: 5px;
+            background: linear-gradient(90deg, #6c5ce7, #f59e0b, #ff7675);
+        }
+
+        .auth-input-group .input-group-text {
+            background: rgba(30, 41, 59, 0.85) !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+            color: #f1f5f9 !important;
+            font-weight: 600;
+        }
+
+        .auth-input-group .form-control {
+            background: rgba(15, 23, 42, 0.75) !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+            color: #ffffff !important;
+            font-size: 0.95rem;
+            padding: 12px 14px;
+        }
+        .auth-input-group .form-control::placeholder {
+            color: #94a3b8 !important;
+            opacity: 0.9 !important;
+        }
+
+        .auth-input-group .form-control:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.25);
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+        }
+
+        .auth-tab-pill {
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-weight: 700;
+            color: #94a3b8;
+            border: none;
+            background: transparent;
+            transition: all 0.25s ease;
+        }
+
+        .auth-tab-pill.active {
+            background: #f59e0b;
+            color: #0f172a;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .avatar-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c5ce7, #ff7675);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+        }
+
+        @keyframes shakeAlert {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake-animation {
+            animation: shakeAlert 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor-glow"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top shadow-sm" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="index.html">
+                <i class="fa-solid fa-compact-disc me-2 text-warning fa-spin-pulse"></i><span class="text-white">Eventify</span><span class="text-warning">Studio</span>
+            </a>
+            <div class="ms-auto d-flex align-items-center">
+                <a href="index.html" class="btn btn-outline-light rounded-pill px-3 py-1 btn-sm me-2"><i class="fa-solid fa-house me-1"></i>Home</a>
+                <a href="events.html" class="btn btn-outline-warning rounded-pill px-3 py-1 btn-sm"><i class="fa-solid fa-star me-1"></i>Concerts</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Auth Container -->
+    <main class="auth-container">
+        <div class="auth-card p-4 p-md-5" data-aos="zoom-in" data-aos-duration="600">
+            
+            <!-- Brand & Heading -->
+            <div class="text-center mb-4">
+                <div class="d-inline-flex p-3 rounded-circle bg-warning bg-opacity-10 text-warning mb-3">
+                    <i class="fa-solid fa-user-shield fa-2x"></i>
+                </div>
+                <h2 class="fw-bold text-white mb-1" id="authHeading">Create Account</h2>
+                <p class="text-light opacity-90 small mb-0" id="authSubheading">
+                    Join Eventify Studio with your phone number and password
+                </p>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="d-flex justify-content-center p-1 bg-dark bg-opacity-75 rounded-pill mb-4 border border-secondary border-opacity-50">
+                <button type="button" class="auth-tab-pill w-50 " id="tabSignInBtn" onclick="switchTab('signin')">
+                    <i class="fa-solid fa-right-to-bracket me-1"></i>Sign In
+                </button>
+                <button type="button" class="auth-tab-pill w-50 active" id="tabSignUpBtn" onclick="switchTab('signup')">
+                    <i class="fa-solid fa-user-plus me-1"></i>Create Account
+                </button>
+            </div>
+
+            <!-- ================= SIGN IN FORM ================= -->
+            <form id="signinForm" class="d-none" onsubmit="handleSignInSubmit(event)">
+                <div id="signinAlert" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-3"></div>
+
+                <!-- Phone Input -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-light mb-1">Mobile Phone Number</label>
+                    <div class="input-group auth-input-group">
+                        <span class="input-group-text"><span class="me-1">🇮🇳</span>+91</span>
+                        <input type="tel" id="signinPhone" class="form-control" placeholder="10-digit number" maxlength="10" pattern="[0-9]{10}" required autocomplete="tel">
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-semibold text-light mb-0">Password</label>
+                        <a href="javascript:void(0)" class="text-warning small text-decoration-none" onclick="openForgotPasswordModal()">Forgot Password?</a>
+                    </div>
+                    <div class="input-group auth-input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="signinPassword" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
+                        <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePassVisibility('signinPassword', this)" title="Show/Hide Password">
+                            <i class="fa-solid fa-eye text-muted"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+                    <label class="form-check-label small text-light opacity-90" for="rememberMe">Remember me on this device</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="signinSubmitBtn" class="btn btn-warning w-100 py-3 rounded-pill fw-bold text-dark shadow-lg">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>Sign In to Eventify
+                </button>
+
+                <!-- Quick Demo Login Box -->
+                <div class="mt-4 p-3 rounded-3 bg-dark bg-opacity-60 border border-secondary border-opacity-50 text-start">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fa-solid fa-bolt text-warning me-2"></i>
+                        <span class="small fw-bold text-warning">Quick Demo Login (1-Click Test):</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1 small" onclick="fillDemoCredentials('9876543210', 'Password@123')">
+                            <i class="fa-solid fa-user me-1 text-primary"></i>Rahul (9876543210)
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1 small" onclick="fillDemoCredentials('9123456780', 'Eventify@2026')">
+                            <i class="fa-solid fa-user me-1 text-info"></i>Priya (9123456780)
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- ================= SIGN UP FORM ================= -->
+            <form id="signupForm" class="" onsubmit="handleSignUpSubmit(event)">
+                <div id="signupAlert" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-3"></div>
+
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-light mb-1">Full Name</label>
+                    <div class="input-group auth-input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="signupName" class="form-control" placeholder="Enter your full name" minlength="2" required autocomplete="name">
+                    </div>
+                </div>
+
+                <!-- Phone Input -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-light mb-1">Mobile Phone Number</label>
+                    <div class="input-group auth-input-group">
+                        <span class="input-group-text"><span class="me-1">🇮🇳</span>+91</span>
+                        <input type="tel" id="signupPhone" class="form-control" placeholder="10-digit number" maxlength="10" pattern="[0-9]{10}" required autocomplete="tel">
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-light mb-1">Password</label>
+                    <div class="input-group auth-input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="signupPassword" class="form-control" placeholder="Create password (min 6 chars)" minlength="6" required autocomplete="new-password">
+                        <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePassVisibility('signupPassword', this)">
+                            <i class="fa-solid fa-eye text-muted"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Confirm Password Input -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-light mb-1">Confirm Password</label>
+                    <div class="input-group auth-input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-shield-halved"></i></span>
+                        <input type="password" id="signupConfirmPassword" class="form-control" placeholder="Re-enter password" minlength="6" required autocomplete="new-password">
+                        <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePassVisibility('signupConfirmPassword', this)">
+                            <i class="fa-solid fa-eye text-muted"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Terms agreement -->
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="signupTerms" required checked>
+                    <label class="form-check-label small text-light opacity-90" for="signupTerms">
+                        I agree to Eventify Studio's <a href="contact.html" class="text-warning text-decoration-none">Terms</a> & <a href="contact.html" class="text-warning text-decoration-none">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="signupSubmitBtn" class="btn btn-warning w-100 py-3 rounded-pill fw-bold text-dark shadow-lg">
+                    <i class="fa-solid fa-user-plus me-2"></i>Create Account
+                </button>
+            </form>
+
+            <!-- Card Footer Note -->
+            <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25 small text-muted">
+                <span id="footerPrompt">Already have an account?</span>
+                <a href="javascript:void(0)" class="text-warning fw-bold text-decoration-none ms-1" id="footerActionLink" onclick="switchTab('signin')">
+                    Sign In here
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border-secondary rounded-4 shadow-lg">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-key text-warning me-2"></i>Reset Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="forgotAlert" class="alert alert-info py-2 px-3 small rounded-3 mb-3">
+                        Enter your registered 10-digit mobile number to reset your password.
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-light">Mobile Number</label>
+                        <div class="input-group auth-input-group">
+                            <span class="input-group-text">🇮🇳 +91</span>
+                            <input type="tel" id="forgotPhone" class="form-control" placeholder="10-digit number" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-light">New Password</label>
+                        <input type="password" id="forgotNewPassword" class="form-control bg-dark text-white border-secondary" placeholder="Enter new password (min 6 chars)" minlength="6">
+                    </div>
+                    <button type="button" class="btn btn-warning w-100 py-2 rounded-pill fw-bold text-dark mt-2" onclick="handlePasswordReset()">
+                        Update Password & Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation Library JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // Cursor Glow Effect
+        const cursorGlow = document.getElementById('cursor-glow');
+        window.addEventListener('mousemove', (e) => {
+            if (cursorGlow) {
+                cursorGlow.style.left = e.clientX + 'px';
+                cursorGlow.style.top = e.clientY + 'px';
+            }
+        });
+
+        // Core Auth Engine in Page
+        const AUTH_USERS_KEY = 'eventify_users';
+        const AUTH_SESSION_KEY = 'eventify_auth_session';
+
+        const DEFAULT_USERS = [
+            {
+                id: 'usr_9876543210',
+                name: 'Rahul Sharma',
+                phone: '9876543210',
+                password: 'Password@123',
+                createdAt: '2026-09-01T10:00:00Z'
+            },
+            {
+                id: 'usr_9123456780',
+                name: 'Priya Patel',
+                phone: '9123456780',
+                password: 'Eventify@2026',
+                createdAt: '2026-09-05T12:00:00Z'
+            }
+        ];
+
+        function initAuth() {
+            if (!localStorage.getItem(AUTH_USERS_KEY)) {
+                localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(DEFAULT_USERS));
+            }
+        }
+
+        function getAllUsers() {
+            initAuth();
+            try {
+                return JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || DEFAULT_USERS;
+            } catch (e) {
+                return DEFAULT_USERS;
+            }
+        }
+
+        function getCurrentUser() {
+            try {
+                const session = JSON.parse(localStorage.getItem(AUTH_SESSION_KEY));
+                if (session && session.isLoggedIn && session.user) return session.user;
+            } catch (e) {}
+            return null;
+        }
+
+        function loginUser(phone, password, remember = true) {
+            initAuth();
+            const cleanPhone = String(phone).replace(/\D/g, '').slice(-10);
+            const users = getAllUsers();
+            const matched = users.find(u => u.phone === cleanPhone);
+
+            if (!matched) {
+                return { success: false, message: 'No account found with phone +91 ' + cleanPhone + '. Please create an account!' };
+            }
+            if (matched.password !== password) {
+                return { success: false, message: 'Incorrect password for +91 ' + cleanPhone + '. Please try again!' };
+            }
+
+            const session = {
+                isLoggedIn: true,
+                user: {
+                    id: matched.id,
+                    name: matched.name,
+                    phone: matched.phone
+                },
+                loginTimestamp: Date.now(),
+                remember: remember
+            };
+            localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+            return { success: true, user: session.user };
+        }
+
+        function registerUser(name, phone, password) {
+            initAuth();
+            const cleanPhone = String(phone).replace(/\D/g, '').slice(-10);
+            if (!name || name.trim().length < 2) {
+                return { success: false, message: 'Please enter your full name (minimum 2 characters).' };
+            }
+            if (cleanPhone.length !== 10) {
+                return { success: false, message: 'Please enter a valid 10-digit mobile phone number.' };
+            }
+            if (!password || password.length < 6) {
+                return { success: false, message: 'Password must be at least 6 characters long.' };
+            }
+
+            const users = getAllUsers();
+            if (users.some(u => u.phone === cleanPhone)) {
+                return { success: false, message: 'An account with phone +91 ' + cleanPhone + ' already exists! Please Sign In instead.' };
+            }
+
+            const newUser = {
+                id: 'usr_' + cleanPhone,
+                name: name.trim(),
+                phone: cleanPhone,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+            users.push(newUser);
+            localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+
+            const session = {
+                isLoggedIn: true,
+                user: {
+                    id: newUser.id,
+                    name: newUser.name,
+                    phone: newUser.phone
+                },
+                loginTimestamp: Date.now(),
+                remember: true
+            };
+            localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+            return { success: true, user: session.user };
+        }
+
+        // Switch Tab UI
+        function switchTab(tab) {
+            const signinForm = document.getElementById('signinForm');
+            const signupForm = document.getElementById('signupForm');
+            const tabSignInBtn = document.getElementById('tabSignInBtn');
+            const tabSignUpBtn = document.getElementById('tabSignUpBtn');
+            const heading = document.getElementById('authHeading');
+            const subheading = document.getElementById('authSubheading');
+            const prompt = document.getElementById('footerPrompt');
+            const link = document.getElementById('footerActionLink');
+
+            // Clear alerts
+            const sInAlert = document.getElementById('signinAlert');
+            const sUpAlert = document.getElementById('signupAlert');
+            if (sInAlert) sInAlert.classList.add('d-none');
+            if (sUpAlert) sUpAlert.classList.add('d-none');
+
+            if (tab === 'signin') {
+                signinForm.classList.remove('d-none');
+                signupForm.classList.add('d-none');
+                tabSignInBtn.classList.add('active');
+                tabSignUpBtn.classList.remove('active');
+                heading.innerText = 'Welcome Back';
+                subheading.innerText = 'Sign in with your phone number and password';
+                prompt.innerText = "Don't have an account yet?";
+                link.innerText = 'Create one now';
+                link.setAttribute('onclick', "switchTab('signup')");
+            } else {
+                signinForm.classList.add('d-none');
+                signupForm.classList.remove('d-none');
+                tabSignInBtn.classList.remove('active');
+                tabSignUpBtn.classList.add('active');
+                heading.innerText = 'Create Account';
+                subheading.innerText = 'Join Eventify Studio with your phone number and password';
+                prompt.innerText = 'Already have an account?';
+                link.innerText = 'Sign In here';
+                link.setAttribute('onclick', "switchTab('signin')");
+            }
+        }
+
+        // Toggle Password Show/Hide
+        function togglePassVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) icon.className = 'fa-solid fa-eye-slash text-warning';
+            } else {
+                input.type = 'password';
+                if (icon) icon.className = 'fa-solid fa-eye text-muted';
+            }
+        }
+
+        // Quick 1-Click Demo Fill
+        function fillDemoCredentials(phone, password) {
+            switchTab('signin');
+            const phoneInput = document.getElementById('signinPhone');
+            const passInput = document.getElementById('signinPassword');
+            if (phoneInput) phoneInput.value = phone;
+            if (passInput) passInput.value = password;
+            
+            // Auto submit for rapid demo
+            const form = document.getElementById('signinForm');
+            if (form) {
+                const submitEvent = new Event('submit', { cancelable: true });
+                form.dispatchEvent(submitEvent);
+            }
+        }
+
+        // Handle Sign In Submit
+        function handleSignInSubmit(e) {
+            e.preventDefault();
+            const phone = document.getElementById('signinPhone').value.trim();
+            const password = document.getElementById('signinPassword').value;
+            const remember = document.getElementById('rememberMe').checked;
+            const alertBox = document.getElementById('signinAlert');
+
+            const res = loginUser(phone, password, remember);
+            if (res.success) {
+                alertBox.className = 'alert alert-success py-2 px-3 small rounded-3 mb-3 fw-bold';
+                alertBox.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Welcome back, ' + res.user.name + '! Redirecting...';
+                alertBox.classList.remove('d-none');
+                
+                setTimeout(() => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect') || 'index.html';
+                    window.location.href = redirectUrl;
+                }, 800);
+            } else {
+                alertBox.className = 'alert alert-danger py-2 px-3 small rounded-3 mb-3 fw-bold shake-animation';
+                alertBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i> ' + res.message;
+                alertBox.classList.remove('d-none');
+            }
+        }
+
+        // Handle Sign Up Submit
+        function handleSignUpSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value.trim();
+            const phone = document.getElementById('signupPhone').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const alertBox = document.getElementById('signupAlert');
+
+            if (password !== confirmPassword) {
+                alertBox.className = 'alert alert-danger py-2 px-3 small rounded-3 mb-3 fw-bold shake-animation';
+                alertBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i> Passwords do not match!';
+                alertBox.classList.remove('d-none');
+                return;
+            }
+
+            const res = registerUser(name, phone, password);
+            if (res.success) {
+                alertBox.className = 'alert alert-success py-2 px-3 small rounded-3 mb-3 fw-bold';
+                alertBox.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Account created successfully! Welcome to Eventify Studio, ' + res.user.name + '! Redirecting...';
+                alertBox.classList.remove('d-none');
+
+                setTimeout(() => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect') || 'index.html';
+                    window.location.href = redirectUrl;
+                }, 1000);
+            } else {
+                alertBox.className = 'alert alert-danger py-2 px-3 small rounded-3 mb-3 fw-bold shake-animation';
+                alertBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i> ' + res.message;
+                alertBox.classList.remove('d-none');
+            }
+        }
+
+        // Forgot Password
+        function openForgotPasswordModal() {
+            const modalEl = document.getElementById('forgotModal');
+            if (modalEl) {
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+            }
+        }
+
+        function handlePasswordReset() {
+            const phone = document.getElementById('forgotPhone').value.trim();
+            const newPass = document.getElementById('forgotNewPassword').value;
+            const alertBox = document.getElementById('forgotAlert');
+
+            const cleanPhone = String(phone).replace(/\D/g, '').slice(-10);
+            if (cleanPhone.length !== 10) {
+                alertBox.className = 'alert alert-danger py-2 px-3 small rounded-3 mb-3 fw-bold';
+                alertBox.innerText = 'Please enter a valid 10-digit mobile number.';
+                return;
+            }
+            if (!newPass || newPass.length < 6) {
+                alertBox.className = 'alert alert-danger py-2 px-3 small rounded-3 mb-3 fw-bold';
+                alertBox.innerText = 'New password must be at least 6 characters.';
+                return;
+            }
+
+            const users = getAllUsers();
+            const matched = users.find(u => u.phone === cleanPhone);
+            if (!matched) {
+                alertBox.className = 'alert alert-danger py-2 px-3 small rounded-3 mb-3 fw-bold';
+                alertBox.innerText = 'No account found with phone +91 ' + cleanPhone + '.';
+                return;
+            }
+
+            matched.password = newPass;
+            localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+
+            // Auto log in with new password
+            loginUser(cleanPhone, newPass, true);
+
+            alertBox.className = 'alert alert-success py-2 px-3 small rounded-3 mb-3 fw-bold';
+            alertBox.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Password updated! Logging you in...';
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 900);
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 600, once: true });
+            initAuth();
+
+            // Check URL parameters for tab=signup
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('tab') === 'signup' || window.location.pathname.endsWith('signup.html')) {
+                switchTab('signup');
+            }
+
+            // If already logged in, show quick notice
+            const user = getCurrentUser();
+            if (user) {
+                const sInAlert = document.getElementById('signinAlert');
+                if (sInAlert) {
+                    sInAlert.className = 'alert alert-info py-2 px-3 small rounded-3 mb-3 fw-semibold';
+                    sInAlert.innerHTML = `<span><i class="fa-solid fa-circle-info text-primary me-1"></i>You are currently signed in as <strong>${user.name}</strong> (+91 ${user.phone}). <a href="index.html" class="text-warning fw-bold text-decoration-none ms-1">Go to Home &rarr;</a></span>`;
+                    sInAlert.classList.remove('d-none');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
